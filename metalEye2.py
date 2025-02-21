@@ -112,13 +112,19 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
                 for el in harr:
                     rarr += struct.pack('l', el)
 
-                for i in range(64):
-                    for j in range(64):
-                        # if i+1<=j and (i+j)%48==0:
-                        #     rarr += struct.pack('f',barr[i+j])
-                        # if 28<i<38 and 28<j<38:
-                            # rarr += struct.pack('f',barr[i+j])
-                        rarr += struct.pack('f',barr[i+j])
+                # for i in range(65):
+                #     for j in range(65):
+                #         # if i+1<=j and (i+j)%48==0:
+                #         #     rarr += struct.pack('f',barr[i+j])
+                #         if 28<i<38 and 28<j<38:
+                #             rarr += struct.pack('f',barr[i+j])
+                #         # rarr += struct.pack('f',barr[i+j])
+
+                # make numpy?
+                for i in range(29,38):
+                    for j in range(29,38):
+                        rarr += struct.pack('f',barr[i*65+j])
+
 
                 ### for bin16
                 for el in earr:
@@ -233,7 +239,7 @@ def _test_llava_embedding(dbPATH1,timeout,**kwargs):
 
             for row in rows:
                 rgb = base64_binaries(row[2])
-                embeddings = llm.emebed(rgb)
+                embeddings = llm.embed(rgb)
 
                 # f_array = array.array("f", row[2])
                 # c_ubyte_ptr = (ctypes.c_ubyte * len(data_array)).from_buffer(data_array)
@@ -297,7 +303,8 @@ def mainProg():
           offload_kqv=True,
           n_gpu_layers=-1,
           embedding=True,
-          verbose=True
+          # verbose=True
+          verbose=False
         )
 
         # Llama(
