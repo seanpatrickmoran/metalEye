@@ -19,6 +19,7 @@ import struct
 import array
 import datetime
 
+import mlx.core as mx
 
 def serialize_f32(vector: List[float]) -> bytes:
     """serializes a list of floats into a compact "raw bytes" format"""
@@ -105,9 +106,16 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
                 rarr = b''
 
                 harr = array.array('I', en[1])
-                barr = array.array('f', en[2])
+                # barr = np.array([float(n) for n in en[2]])
+                # barr = array.array('f', en[2])
+                # barr = np.array(barr)
                 ### for bin16
-                earr = array.array('f', en[3])
+                # print(en[1])
+                # print(array.array('I', en[1]))
+                # harr = mx.array(en[1],dtype=mx.uint8)
+                barr = mx.array(en[2],dtype=mx.float32)
+                earr = mx.array(en[3],dtype=mx.float32)
+                # earr = array.array('f', en[3])
 
                 for el in harr:
                     rarr += struct.pack('l', el)
@@ -141,10 +149,12 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
 
 
                 embeddings = llm.create_embedding(str(rarr))
-                _vec = np.zeros(len(embeddings['data'][0]['embedding'][0]))
+                _vec = mx.array([0]*len(embeddings['data'][0]['embedding'][0]),dtype=mx.float32)
+                # _vec = np.zeros(len(embeddings['data'][0]['embedding'][0]))
                 # print(_vec.shape)
                 for em in embeddings['data'][0]['embedding']:
-                    _vec[:] += np.array(em)[:]
+                    # _vec[:] += np.array(em)[:]
+                    _vec = mx.add(_vec,_vec)
                 _vec /= len(embeddings['data'][0]['embedding'])
                 response.embeddings +=[_vec]
 
@@ -280,6 +290,7 @@ def mainProg():
         _createTable(dbVECTOR, 10)
 
     hardLimiter = 99130;
+    # hardLimiter = 48;
     #check length of table
 
     insert_kwargs = {
@@ -296,7 +307,7 @@ def mainProg():
           model_path="/Users/sean/Documents/gguf_models/llava_v1.5-13B/ggml_llava-v1.5-13b-q4_k.gguf",
           chat_format= "llava-1-5",
           chat_handler=insert_kwargs["chat_handler"],
-          n_ctx=2048,
+          n_ctx=2048*2,
           n_batch=1024,
           logits_all=True,
           n_threads=6,
