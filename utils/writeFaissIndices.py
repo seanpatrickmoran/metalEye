@@ -9,7 +9,7 @@ import time
 
 
 # dbSQLITE3VEC = "/Users/sean/Documents/Master/2025/Feb2025/virtTables/EB_14_fts5vec.db"
-dbSQLITE3VEC = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/EB_databaseVEC_14.db"
+dbSQLITE3VEC = "/Users/sean/Documents/Master/2025/Feb2025/virtualTables/EB_databaseVEC_18_fts5vec.db"
 # dbSQLITE3VEC = "/Users/seanmoran/Documents/Master/2025/Feb2025/vectorPilot/SQLITE_databaseVEC.db"
 # dbVECTOR = "/Users/seanmoran/Documents/Master/2025/Feb2025/vectorPilot/EB_databaseVEC.db"
 
@@ -31,7 +31,7 @@ def getEverything(dbPATH, timeout=10):
         cursor.row_factory = sqlite3.Row
         cursor.execute("SELECT rowid,embedding from vector_table")
         print(f"success")
-        reply = [(a,deserialize_f32(b, 512)) for a,b in cursor.fetchall()]
+        reply = [(a,deserialize_f32(b, 5120)) for a,b in cursor.fetchall()]
     except Exception as e:
         print(e)
         reply = []
@@ -49,11 +49,12 @@ def runMain():
     print('rad')
 
     ### faiss here.
-    d = 512                           # dimension
+    d = 5120                           # dimension
     nb = len(rows)                      # database size
     nq = nb//10                       # nb of queries
     xb=np.array([np.array(xi[1]) for xi in rows]).astype('float32')   #EB_14_bin has gaps in key_ids. we can just ignore these as source_17 has no gaps.
     # xb = np.random.random((nb, d)).astype('float32')
+    print(xb.shape)
     xb[:, 0] += np.arange(nb) / 1000.
     xq = np.random.random((nq, d)).astype('float32')
     xq[:, 0] += np.arange(nq) / 1000.
@@ -64,15 +65,15 @@ def runMain():
     m = 8                             # number of subquantizers
     k = 4
 
-    # quantizer = faiss.IndexFlatL2(d)  # this remains the same
-    # print("init quantizer")
-    # index = faiss.IndexIVFPQ(quantizer, d, nlist, m, 8)
-    # print("init index")
-    #                                     # 8 specifies that each sub-vector is encoded as 8 bits
-    # index.train(xb)
-    # print("trained index")
-    # index.add(xb)
-    # faiss.write_index(index, "faiss.IndexIVFPQ.test.index")
+    quantizer = faiss.IndexFlatL2(d)  # this remains the same
+    print("init quantizer")
+    index = faiss.IndexIVFPQ(quantizer, d, nlist, m, 8)
+    print("init index")
+                                        # 8 specifies that each sub-vector is encoded as 8 bits
+    index.train(xb)
+    print("trained index")
+    index.add(xb)
+    faiss.write_index(index, "/Users/sean/Documents/Master/2025/Feb2025/table_18_metadata/faiss.IndexIVFPQ.test.index")
 
 
 
@@ -156,15 +157,15 @@ def runMain():
     # print(I,D)
 
 
-    # del index
-    d = 512                           # dimensio
+    del index
+    d = 5120                           # dimensio
     quantizer = faiss.IndexFlatL2(d)  # the other index
     index = faiss.IndexIVFFlat(quantizer, d, nlist)
     index.train(xb)
     index.add(xb)
     # index.make_direct_map()
     index.set_direct_map_type(faiss.DirectMap.Array)
-    faiss.write_index(index, "faiss.IndexIVFFlat.index")
+    faiss.write_index(index, "/Users/sean/Documents/Master/2025/Feb2025/table_18_metadata/faiss.IndexIVFFlat.index")
 
     start = time.time()
     D, I = index.search(xq, 5)
@@ -176,7 +177,7 @@ def runMain():
 
     index2 = faiss.IndexFlatL2(d)
     index2.add(xb)
-    faiss.write_index(index, "faiss.IndexFlatL2_dirMap.index")
+    faiss.write_index(index, "/Users/sean/Documents/Master/2025/Feb2025/table_18_metadata/faiss.IndexFlatL2_dirMap.index")
 
 
 if __name__ == "__main__":

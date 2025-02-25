@@ -104,7 +104,7 @@ def serialize_f32(vector: List[float]) -> bytes:
     return struct.pack("%sf" % len(vector), *vector)
 
 
-def deserialize_f32(vector,size=512):
+def deserialize_f32(vector,size=5120):
     return struct.unpack(f"{size}f", vector)
 
 
@@ -124,8 +124,8 @@ def _readEmbeddingByKeyId(dbPATH, timeout, key_id=0):
         cursor.execute("SELECT * FROM vector_table WHERE rowid = ? LIMIT 1", [key_id,])
         print(key_id, end=": ")
         # print([b for b in cursor.fetchall()])
-        # print([deserialize_f32(b, 512) for b in cursor.fetchall()])
-        reply = [deserialize_f32(b[0], 512) for b in cursor.fetchall()]
+        # print([deserialize_f32(b, 5120) for b in cursor.fetchall()])
+        reply = [deserialize_f32(b[0], 5120) for b in cursor.fetchall()]
         if reply == []:
             return -404
     except Exception as e:
@@ -422,7 +422,7 @@ def getEverything(dbPATH, timeout=10):
         cursor.row_factory = sqlite3.Row
         cursor.execute("SELECT rowid,embedding from vector_table")
         print(f"success")
-        reply = [(a,deserialize_f32(b, 512)) for a,b in cursor.fetchall()]
+        reply = [(a,deserialize_f32(b, 5120)) for a,b in cursor.fetchall()]
     except Exception as e:
         print(e)
         reply = []
@@ -449,7 +449,7 @@ assert index.is_trained
 
 rows = getEverything(dbVECTOR_FTS5);
 # k = 50
-d = 512                           # dimension
+d = 5120                           # dimension
 nb = len(rows)                      # database size
 nq = nb//10                       # nb of queries
 xb=np.array([np.array(xi[1]) for xi in rows]).astype('float32') #float32? this may be wrong
