@@ -19,10 +19,10 @@ import sys
 ####################################
 
 
-dbSOURCE = "/Users/seanmoran/Documents/Master/2025/Feb2025/database_TEST/database_17_bin.db"
+dbSOURCE = "/Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_17_bin.db"
 # dbSOURCE = "/Users/seanmoran/Documents/Master/2025/Feb2025/database_TEST/database_14_bin.db"
 # dbVECTOR_FTS5 = "/Users/seanmoran/Documents/Master/2025/Feb2025/EB_databaseVEC_14.db"
-dbVECTOR_FTS5 = "/Users/seanmoran/Documents/Master/2025/Feb2025/virtTables/EB_14_fts5vec.db"
+dbVECTOR_FTS5 = "/Users/sean/Documents/Master/2025/Feb2025/virtualTables/EB_databaseVEC_18_fts5vec.db"
 
 #99129
 
@@ -102,7 +102,7 @@ def serialize_f32(vector: List[float]) -> bytes:
     return struct.pack("%sf" % len(vector), *vector)
 
 
-def deserialize_f32(vector,size=512):
+def deserialize_f32(vector,size=5120):
     return struct.unpack(f"{size}f", vector)
 
 
@@ -123,7 +123,7 @@ def _readEmbeddingByKeyId(dbPATH, timeout, key_id=0):
         print(key_id, end=": ")
         # print([b for b in cursor.fetchall()])
         # print([deserialize_f32(b, 512) for b in cursor.fetchall()])
-        reply = [deserialize_f32(b[0], 512) for b in cursor.fetchall()]
+        reply = [deserialize_f32(b[0], 5120) for b in cursor.fetchall()]
         if reply == []:
             return -404
     except Exception as e:
@@ -396,7 +396,7 @@ def getEverything(dbPATH, timeout=10):
         cursor.row_factory = sqlite3.Row
         cursor.execute("SELECT rowid,embedding from vector_table")
         print(f"success")
-        reply = [(a,deserialize_f32(b, 512)) for a,b in cursor.fetchall()]
+        reply = [(a,deserialize_f32(b, 5120)) for a,b in cursor.fetchall()]
     except Exception as e:
         print(e)
         reply = []
@@ -414,14 +414,15 @@ def getEverything(dbPATH, timeout=10):
 #
 ############################
 
-index = faiss.read_index("/Users/seanmoran/Documents/Master/2025/Feb2025/022425_faissPrep/faiss.IndexHNSWSQ_QT8_m128eConst64.index")
+index = faiss.read_index("/Users/sean/Documents/Master/2025/Feb2025/table_18_metadata/faiss.IndexIVFPQ.test.index")
+# index = faiss.read_index("/Users/seanmoran/Documents/Master/2025/Feb2025/022425_faissPrep/faiss.IndexHNSWSQ_QT8_m128eConst64.index")
 # index = faiss.read_index("/Users/seanmoran/Documents/Master/2025/Feb2025/022425_faissPrep/faiss.IndexHNSWSQ_QT8.index")
 # index = faiss.read_index("/Users/seanmoran/Documents/Master/2025/Feb2025/022425_faissPrep/faiss.IndexIVFPQ.test.index")
 assert index.is_trained
 
 rows = getEverything(dbVECTOR_FTS5);
 k = 50
-d = 512                           # dimension
+d = 5120                           # dimension
 nb = len(rows)                      # database size
 nq = nb//10                       # nb of queries
 xb=np.array([np.array(xi[1]) for xi in rows]).astype('float32')
@@ -429,23 +430,23 @@ xb=np.array([np.array(xi[1]) for xi in rows]).astype('float32')
 
 def mainProg():
     print(xb.shape)
-    for i in range(1,99130):
+    for i in range(0,99130):
         embedded = _readEmbeddingByKeyId(dbVECTOR_FTS5, 10, i)
 
         #batches of 200?
 
         if embedded == -404:
-            break
+            pass
 
         if embedded!=-1:
             faissHNSW(i, embedded)
 
-    #     if i%999==0:
-    #         with open("022425_faisshnsw_vector_pearson_analytics.json", "w") as zug:
-    #             zug.write(json.dumps(store_answer,cls=MLXEncoder))
+        if i%999==0:
+            with open("/Users/sean/Documents/Master/2025/Feb2025/table_18_metadata/022525_faissIVFPQ_vector_linear_pearson_analytics.json_2", "w") as zug:
+                zug.write(json.dumps(store_answer,cls=MLXEncoder))
 
-    # with open("022425_faisshnsw_vector_pearson_analytics.json", "w") as zug:
-    #     zug.write(json.dumps(store_answer,cls=MLXEncoder))
+    with open("/Users/sean/Documents/Master/2025/Feb2025/table_18_metadata/022525_faissIVFPQ_vector_linear_pearson_analytics.json_2", "w") as zug:
+        zug.write(json.dumps(store_answer,cls=MLXEncoder))
 
 
 if __name__ == "__main__":
