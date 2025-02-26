@@ -50,6 +50,49 @@ store_answer = {
                 }
 
 
+
+import mlx.core as mx
+
+def createBitMask(arraySize, subset):
+
+
+
+    # # subset must be a mx.array...
+    # # i.e. createBitMask(99130,mx.arange(0,1111))
+
+    # # entryVal = 99130
+    # bitmap = mx.zeros(arraySize + arraySize%8,dtype=mx.uint8) #now we always have a number perfectly divisible by 8. 
+    # # subset = mx.arange(0,1111) #take from partition hashmap
+    # bitmap[subset] = 1 
+    # #set to bloomfilter. we need to pad this to be 8bit unsigned.
+
+    # #little endian bitmap for bloom filter
+    # mxBitMap = mx.zeros((arraySize + arraySize%8)//8,dtype=mx.int64)
+
+    # bw = mx.zeros(8, dtype=mx.uint8)
+    # for i in range(len(bitmap)):
+    #     bw[i%8]=bitmap[i] 
+    #     if not (i+1)%8:
+    #         accumulator = 0
+    #         for j in range(8):
+    #             accumulator += (2**j) * bw[j].item()
+    #             bw[j] = 0 
+    #         mxBitMap[((i+1)//8)-1]=accumulator
+    #         print(i, mxBitMap[((i+1)//8)-1].item())
+    # return np.array(mxBitMap)
+
+    bitmap = np.zeros(arraySize, dtype=bool)
+    bitmap[np.array(subset)] = True
+    bitmap = np.packbits(bitmap, bitorder='little')
+    return bitmap
+
+
+
+
+
+
+
+
 # def pairwise_correlation(A, B):
 #     am = A - np.mean(A, axis=0, keepdims=True)
 #     bm = B - np.mean(B, axis=0, keepdims=True)
@@ -179,6 +222,11 @@ def _readEmbeddingByKeyId(dbPATH, timeout, key_id=0):
 
 
 
+####################################
+#
+# Broad Search Methods
+#
+####################################
         
 
 def faissHNSW(id, eValue, positions):
@@ -241,19 +289,18 @@ def faissHNSW(id, eValue, positions):
     # print(query.embeddings[0])
 
     xq = np.reshape(xb[id,:], (1,-1))
-    k = 50 #this doesn't cost much.
+    k = 200 #this doesn't cost much.
     # D, I = index.search(xq, k) # search @id KNN
 
-    # params=faiss.SearchParametersIVF(sel=faiss.IDSelectorRange(start, end+1, True))
-    # params=faiss.SearchParametersHNSW(sel=faiss.IDSelectorRange(start, end+1, True))
-    # selr = faiss.IDSelectorRange(start, end+1, True)
-    # sp = faiss.swig_ptr
-    # _D, _I = index.search(xq, k, params=params)#, params=faiss.SearchParameters(sel=faiss.IDSelectorRange(start, end+1, True)))
-    _D, _I = index.search(xq, k, params=faiss.SearchParametersIVF(sel=faiss.IDSelectorRange(start, end+1, True),nprobe=50))
-    # _D, _I = index.search(xq, k, params=faiss.SearchParametersIVF(sel=faiss.IDSelectorRange(start, end+1)))
-    # _D, _I = index.search(xq, k, params=faiss.SearchParametersIVF(sel=faiss.IDSelectorRange(start, end+1)))
 
+    # now = datetime.datetime.now()
+    mitBap = createBitMask(nb, mx.arange(start,end))
+    # _D, _I = index.search(xq, k, params=faiss.SearchParametersIVF(sel=faiss.IDSelectorBitmap(mitBap),nprobe=200))
 
+    _D, _I = index.search(xq, k, params=faiss.SearchParametersIVF(sel=faiss.IDSelectorRange(start, end, True),nprobe=200))
+    # print("Search ", datetime.datetime.now() - now)
+
+    # print(_I)
     if len(_D[0]) == 0 or len(_I[0]) == 0:
         return
 
@@ -336,6 +383,13 @@ def faissHNSW(id, eValue, positions):
     logging += "\n"
 
     print(logging)
+
+
+####################################
+#
+# SQL touch methods
+#
+####################################
 
 
 def keyIdToRow(dbPATH=dbSOURCE, key_id=1, timeout=10):
@@ -454,6 +508,22 @@ nb = len(rows)                      # database size
 nq = nb//10                       # nb of queries
 xb=np.array([np.array(xi[1]) for xi in rows]).astype('float32') #float32? this may be wrong
 ############
+
+
+
+
+
+
+
+
+
+
+
+####################################
+#
+# Main Program
+#
+####################################
 
 def mainProg():
     with open(sourcePartitions, 'r') as file:
