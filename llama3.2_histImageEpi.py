@@ -3,12 +3,7 @@ import json
 # x = requests.post("http://127.0.0.1:8080/v1/chat/completions", headers = {"Content-Type": "application/json"},json={"messages": [{"role":"user", "content":"Katarina liked your song"}]} )
 
 from llama_cpp import Llama
-from llama_cpp.llama_chat_format import Llava15ChatHandler
-import ctypes
-import array
 import numpy as np
-import base64
-
 
 import sqlite3
 import sqlite_vec
@@ -19,7 +14,6 @@ import struct
 import array
 import datetime
 
-import mlx.core as mx
 
 def serialize_f32(vector: List[float]) -> bytes:
     """serializes a list of floats into a compact "raw bytes" format"""
@@ -29,6 +23,7 @@ def serialize_f32(vector: List[float]) -> bytes:
 
 
 def call(PATH,TIMEOUT):
+
     connection = sqlite3.connect(PATH, timeout=TIMEOUT)  # Set timeout to 10 seconds
     cursor = connection.cursor()
     return connection,cursor
@@ -64,8 +59,7 @@ def _createTable(dbPATH, timeout,**kwargs):
         sqlite_vec.load(db)
         db.enable_load_extension(False)
         # cursor = connection.execute("CREATE TABLE vec_items USING vec0(embedding float[256])")
-        # db.execute("CREATE VIRTUAL TABLE vec_items USING vec0(key_id integer primary key, embedding float[3072])")
-        db.execute("CREATE VIRTUAL TABLE vec_items USING vec0(key_id integer primary key, embedding float[5120])") #llava 13B
+        db.execute("CREATE VIRTUAL TABLE vec_items USING vec0(key_id integer primary key, embedding float[3072])")
         # cursor = connection.execute("CREATE TABLE imag(name, dataset, condition, coordinates, numpyarr, viewing_vmax, dimensions, hic_path, PUB_ID, resolution, norm, meta)")
         print("table make; success")
         # db.close()
@@ -106,55 +100,38 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
                 rarr = b''
 
                 harr = array.array('I', en[1])
-                # barr = np.array([float(n) for n in en[2]])
-                # barr = array.array('f', en[2])
-                # barr = np.array(barr)
+                barr = array.array('f', en[2])
                 ### for bin16
-                # print(en[1])
-                # print(array.array('I', en[1]))
-                # harr = mx.array(en[1],dtype=mx.uint8)
-                barr = mx.array(en[2],dtype=mx.float32)
-                # earr = mx.array(en[3],dtype=mx.float32)
-                # earr = array.array('f', en[3])
+                earr = array.array('f', en[3])
 
                 for el in harr:
                     rarr += struct.pack('l', el)
 
-                # for i in range(65):
-                #     for j in range(65):
-                #         # if i+1<=j and (i+j)%48==0:
-                #         #     rarr += struct.pack('f',barr[i+j])
-                #         if 28<i<38 and 28<j<38:
-                #             rarr += struct.pack('f',barr[i+j])
-                #         # rarr += struct.pack('f',barr[i+j])
+                for i in range(64):
+                    for j in range(64):
+                        # if i+1<=j and (i+j)%48==0:
+                        #     rarr += struct.pack('f',barr[i+j])
+                        if 28<i<38 and 28<j<38:
+                            rarr += struct.pack('f',barr[i+j])
 
-                # make numpy?
-                for i in range(29,38):
-                    for j in range(29,38):
-                        rarr += struct.pack('f',barr[i*65+j])
+                ### for bin16
+                for el in earr:
+                    rarr += struct.pack('f', el)
 
 
                 ### for bin16
-                # for el in earr:
-                    # rarr += struct.pack('f', el)
-
-
-                ### for bin16
-                # if en[4]!=":":
-                    # byteDir = bytes(en[4],'utf8')
-                    # for zbyte in byteDir:
-                        # rarr += struct.pack('I', zbyte)
+                if en[4]!=":":
+                    byteDir = bytes(en[4],'utf8')
+                    for zbyte in byteDir:
+                        rarr += struct.pack('I', zbyte)
 
                 # reply += [str(rarr)]
 
 
                 embeddings = llm.create_embedding(str(rarr))
-                _vec = mx.array([0]*len(embeddings['data'][0]['embedding'][0]),dtype=mx.float32)
-                # _vec = np.zeros(len(embeddings['data'][0]['embedding'][0]))
-                # print(_vec.shape)
+                _vec = np.zeros(len(embeddings['data'][0]['embedding'][0]))
                 for em in embeddings['data'][0]['embedding']:
-                    # _vec[:] += np.array(em)[:]
-                    _vec = mx.add(_vec,_vec)
+                    _vec[:] += np.array(em)[:]
                 _vec /= len(embeddings['data'][0]['embedding'])
                 response.embeddings +=[_vec]
 
@@ -199,81 +176,6 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
     return _readDB(kwargs['offset'],kwargs["limit"])
 
 
-
-
-
-
-
-
-
-
-
-def convert_to_jpeg(byte_array):
-    # Convert bytearray to NumPy float32 array
-    float_arr = np.array(struct.unpack(f'{len(byte_array) // 4}f', byte_array), dtype=np.float32)
-    
-    # Reshape into 65x65 grayscale image
-    image = float_arr.reshape(65, 65)
-    
-    # Normalize to 0-255 and convert to uint8
-    image = 255 * (image - image.min()) / (image.max() - image.min())  # Normalize
-    image = image.astype(np.uint8)
-    
-    # Convert grayscale to RGB by stacking channels
-    rgb_image = np.stack([image] * 3, axis=-1)  # Shape (65, 65, 3)
-    
-    # Encode as JPEG using base64
-    jpeg_data = base64.b64encode(rgb_image.tobytes()).decode('utf-8')
-    
-    return jpeg_data
-
-
-
-def base64_binaries(byte_array):
-    float_arr = np.array(struct.unpack(f'{len(byte_array) // 4}f', byte_array), dtype=np.float32)
-    b64 = base64.b64encode(float_arr.tobytes()).decode('utf-8')
-    return b64
-
-def _test_llava_embedding(dbPATH1,timeout,**kwargs):
-    connection_s,cursor_s=call(dbPATH1,timeout)
-    llm = kwargs["model"]
-    c_handler = kwargs["chat_handler"]
-
-    try:
-        for i in range(5):
-            limit = 5
-            offset = i*5
-            cursor_s.row_factory = sqlite3.Row
-            cursor_s.execute("SELECT key_id, hist_rel, numpyarr, epigenomicFactors, motifDirection FROM imag LIMIT ? OFFSET ?", (limit,offset))
-            rows = cursor_s.fetchall()
-
-            for row in rows:
-                rgb = base64_binaries(row[2])
-                embeddings = llm.embed(rgb)
-
-                # f_array = array.array("f", row[2])
-                # c_ubyte_ptr = (ctypes.c_ubyte * len(data_array)).from_buffer(data_array)
-                # barr = array.array('f', row[2])
-
-                # embed = c_handler._llava_cpp.llava_image_embed_make_with_bytes(ctx_clip=c_handler.clip_ctx, image_bytes=c_ubyte_ptr, n_threads=6, image_bytes_length=len(row[2]),)
-                # embed = c_handler._embed_image_bytes(
-                #     image_bytes=rgb,
-                #     n_threads_batch=6,
-                # )    
-
-                print(embed)
-
-    except sqlite3.OperationalError as e:
-        template = "An exception of type {0} occurred. Arguments:\n{1!r}"
-        message = template.format(type(e).__name__, e.args)
-        print(message)
-        print(e)
-
-
-
-
-
-
 def mainProg():
     # dbSOURCE = "/Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_14_bin.db"
     # dbSOURCE = "/Users/seanmoran/Documents/Master/2025/Feb2025/database_TEST/database_14_bin.db"
@@ -281,7 +183,7 @@ def mainProg():
 
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/EB_databaseVEC_14.db"
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/testTables/metalLlamacppSPEEDTEST.db"
-    dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/llava_image+hist_only_databaseVEC_18_bin.db"
+    dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/ebTables/0_Llama3.4_Image+Hist+Epi+MotifDir_EB_databaseVEC.db"
 
     try:
         _createTable(dbVECTOR, 10)
@@ -290,7 +192,6 @@ def mainProg():
         _createTable(dbVECTOR, 10)
 
     hardLimiter = 99130;
-    # hardLimiter = 48;
     #check length of table
 
     insert_kwargs = {
@@ -302,31 +203,14 @@ def mainProg():
         }
 
     if insert_kwargs["entrypoint"]=="llamacpp":
-        insert_kwargs["chat_handler"] = Llava15ChatHandler(clip_model_path="/Users/sean/Documents/gguf_models/llava_v1.5-13B/mmproj-model-f16.gguf", verbose=True)
         insert_kwargs["model"] = Llama(
-          model_path="/Users/sean/Documents/gguf_models/llava_v1.5-13B/ggml_llava-v1.5-13b-q4_k.gguf",
-          chat_format= "llava-1-5",
-          chat_handler=insert_kwargs["chat_handler"],
-          n_ctx=2048*2,
-          n_batch=1024,
-          logits_all=True,
-          n_threads=6,
-          offload_kqv=True,
-          n_gpu_layers=-1,
-          embedding=True,
-          # verbose=True
-          verbose=False
+        model_path="/Users/sean/Downloads/llama-3.2-3b-instruct-q4_k_m.gguf",
+        n_gpu_layers=-1, # Uncomment to use GPU acceleration
+        # seed=1337, # Uncomment to set a specific seed
+        n_ctx=8192, # Uncomment to increase the context window
+        embedding=True,
+        verbose=False,
         )
-
-        # Llama(
-        # # model_path="/Users/sean/Downloads/llama-3.2-3b-instruct-q4_k_m.gguf",
-        # model_path = "/Users/sean/Documents/gguf_models/ggml_llava-v1.5-13b-q4_k.gguf",
-        # n_gpu_layers=-1, # Uncomment to use GPU acceleration
-        # # seed=1337, # Uncomment to set a specific seed
-        # n_ctx=8192, # Uncomment to increase the context window
-        # embedding=True,
-        # verbose=False,
-        # )
 
     while insert_kwargs["offset"] < hardLimiter:
         tnow = datetime.datetime.now()
@@ -335,7 +219,6 @@ def mainProg():
         print(datetime.datetime.now() - tnow, datetime.datetime.now())
         print(insert_kwargs)
 
-    # _test_llava_embedding(dbSOURCE, 10, **insert_kwargs)
 
 if __name__ == "__main__":
     now = datetime.datetime.now()

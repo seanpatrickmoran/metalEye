@@ -134,16 +134,16 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
                         rarr += struct.pack('f',barr[i*65+j])
 
 
-                ### for bin16
+                # ### for bin16
                 # for el in earr:
-                    # rarr += struct.pack('f', el)
+                #     rarr += struct.pack('f', el)
 
 
-                ### for bin16
+                # ### for bin16
                 # if en[4]!=":":
-                    # byteDir = bytes(en[4],'utf8')
-                    # for zbyte in byteDir:
-                        # rarr += struct.pack('I', zbyte)
+                #     byteDir = bytes(en[4],'utf8')
+                #     for zbyte in byteDir:
+                #         rarr += struct.pack('I', zbyte)
 
                 # reply += [str(rarr)]
 
@@ -281,7 +281,7 @@ def mainProg():
 
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/EB_databaseVEC_14.db"
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/testTables/metalLlamacppSPEEDTEST.db"
-    dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/llava_image+hist_only_databaseVEC_18_bin.db"
+    dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/ebTables/0_LLava1.5_Image+Hist_EB_databaseVEC.db"
 
     try:
         _createTable(dbVECTOR, 10)

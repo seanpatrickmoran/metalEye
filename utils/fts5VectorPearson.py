@@ -430,7 +430,7 @@ xb=np.array([np.array(xi[1]) for xi in rows]).astype('float32')
 
 def mainProg():
     print(xb.shape)
-    for i in range(0,99130):
+    for i in range(999*16-1,99130):
         embedded = _readEmbeddingByKeyId(dbVECTOR_FTS5, 10, i)
 
         #batches of 200?
@@ -442,10 +442,10 @@ def mainProg():
             faissHNSW(i, embedded)
 
         if i%999==0:
-            with open("/Users/sean/Documents/Master/2025/Feb2025/table_18_metadata/022525_faissIVFPQ_vector_linear_pearson_analytics.json_2", "w") as zug:
+            with open("/Users/sean/Documents/Master/2025/Feb2025/table_18_metadata/022525_faissIVFPQ_vector_linear_pearson_analytics.json_3", "w") as zug:
                 zug.write(json.dumps(store_answer,cls=MLXEncoder))
 
-    with open("/Users/sean/Documents/Master/2025/Feb2025/table_18_metadata/022525_faissIVFPQ_vector_linear_pearson_analytics.json_2", "w") as zug:
+    with open("/Users/sean/Documents/Master/2025/Feb2025/table_18_metadata/022525_faissIVFPQ_vector_linear_pearson_analytics.json_3", "w") as zug:
         zug.write(json.dumps(store_answer,cls=MLXEncoder))
 
 

@@ -114,7 +114,7 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
                 # print(array.array('I', en[1]))
                 # harr = mx.array(en[1],dtype=mx.uint8)
                 barr = mx.array(en[2],dtype=mx.float32)
-                # earr = mx.array(en[3],dtype=mx.float32)
+                earr = mx.array(en[3],dtype=mx.float32)
                 # earr = array.array('f', en[3])
 
                 for el in harr:
@@ -135,15 +135,15 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
 
 
                 ### for bin16
-                # for el in earr:
-                    # rarr += struct.pack('f', el)
+                for el in earr:
+                    rarr += struct.pack('f', el)
 
 
                 ### for bin16
-                # if en[4]!=":":
-                    # byteDir = bytes(en[4],'utf8')
-                    # for zbyte in byteDir:
-                        # rarr += struct.pack('I', zbyte)
+                if en[4]!=":":
+                    byteDir = bytes(en[4],'utf8')
+                    for zbyte in byteDir:
+                        rarr += struct.pack('I', zbyte)
 
                 # reply += [str(rarr)]
 
@@ -281,7 +281,7 @@ def mainProg():
 
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/EB_databaseVEC_14.db"
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/testTables/metalLlamacppSPEEDTEST.db"
-    dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/llava_image+hist_only_databaseVEC_18_bin.db"
+    dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/ebTables/0_LLava1.5_Image+Hist+Epi+MotifDir_EB_databaseVEC.db"
 
     try:
         _createTable(dbVECTOR, 10)
