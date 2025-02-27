@@ -90,53 +90,63 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
             cursor_s.row_factory = sqlite3.Row
             # cursor_s.execute("SELECT key_id, hist_rel, numpyarr FROM imag LIMIT ? OFFSET ?", (limit,offset))
             ### for bin16
-            cursor_s.execute("SELECT key_id, hist_rel, numpyarr, epigenomicFactors, motifDirection FROM imag LIMIT ? OFFSET ?", (limit//limit,offset))
+            cursor_s.execute("SELECT key_id, hist_rel, numpyarr, epigenomicFactors, motifDirection FROM imag LIMIT ? OFFSET ?", (limit,offset))
             row_ids = []
             reply = []
             llm = kwargs["model"]
             response = lambda: None
             response.embeddings = []
             for en in cursor_s.fetchall():
+                if incrementor%8!=0:
+                    incrementor+=1
+                    continue
+                incrementor+=1
                 
-                row_ids += [en[0]]
-                rarr = b''
+                try:                
+                    row_ids += [en[0]]
+                    rarr = b''
 
-                # harr = array.array('I', en[1])
-                barr = array.array('f', en[2])
-                ### for bin16
-                # earr = array.array('f', en[3])
+                    # harr = array.array('I', en[1])
+                    barr = array.array('f', en[2])
+                    ### for bin16
+                    # earr = array.array('f', en[3])
 
-                # for el in harr:
-                    # rarr += struct.pack('l', el)
+                    # for el in harr:
+                        # rarr += struct.pack('l', el)
 
-                # for i in range(0,65):
-                #     for j in range(0,65):
-                        # rarr += struct.pack('f',barr[i*65+j])
-                ##keyhole image
-                for i in range(29,38):
-                    for j in range(29,38):
-                        rarr += struct.pack('f',barr[i*65+j])
+                    # for i in range(0,65):
+                    #     for j in range(0,65):
+                            # rarr += struct.pack('f',barr[i*65+j])
+                    ##keyhole image
+                    for i in range(29,38):
+                        for j in range(29,38):
+                            rarr += struct.pack('f',barr[i*65+j])
 
-                ## for epigenomics
-                # for el in earr:
-                    # rarr += struct.pack('f', el)
-
-
-                ## for motif direction
-                # if en[4]!=":":
-                    # byteDir = bytes(en[4],'utf8')
-                    # for zbyte in byteDir:
-                        # rarr += struct.pack('I', zbyte)
-
-                # reply += [str(rarr)]
+                    ## for epigenomics
+                    # for el in earr:
+                        # rarr += struct.pack('f', el)
 
 
-                embeddings = llm.create_embedding(str(rarr))
-                _vec = np.zeros(len(embeddings['data'][0]['embedding'][0]))
-                for em in embeddings['data'][0]['embedding']:
-                    _vec[:] += np.array(em)[:]
-                _vec /= len(embeddings['data'][0]['embedding'])
-                response.embeddings +=[_vec]
+                    ## for motif direction
+                    # if en[4]!=":":
+                        # byteDir = bytes(en[4],'utf8')
+                        # for zbyte in byteDir:
+                            # rarr += struct.pack('I', zbyte)
+
+                    # reply += [str(rarr)]
+
+
+                    embeddings = llm.create_embedding(str(rarr))
+                    _vec = np.zeros(len(embeddings['data'][0]['embedding'][0]))
+                    for em in embeddings['data'][0]['embedding']:
+                        _vec[:] += np.array(em)[:]
+                    _vec /= len(embeddings['data'][0]['embedding'])
+                    response.embeddings +=[_vec]
+
+                    
+                except Exception as e:
+                    print(f"{e}: exception with {en[0]}...")
+                    pass
 
             print("dataloaded@@",end="")
             # print(len(response.embeddings))
@@ -199,7 +209,7 @@ def mainProg():
     #check length of table
 
     insert_kwargs = {
-        "limit": 8,
+        "limit": 256,
 #        "offset": 1650,
         "offset": 0,
         "entrypoint": "llamacpp"

@@ -88,50 +88,60 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
             cursor_s.row_factory = sqlite3.Row
             # cursor_s.execute("SELECT key_id, hist_rel, numpyarr FROM imag LIMIT ? OFFSET ?", (limit,offset))
             ### for bin16
-            cursor_s.execute("SELECT key_id, hist_rel, numpyarr, epigenomicFactors, motifDirection FROM imag LIMIT ? OFFSET ?", (limit//limit,offset))
+            cursor_s.execute("SELECT key_id, hist_rel, numpyarr, epigenomicFactors, motifDirection FROM imag LIMIT ? OFFSET ?", (limit,offset))
             row_ids = []
             reply = []
             llm = kwargs["model"]
             response = lambda: None
             response.embeddings = []
+
+            incrementor = 0
             for en in cursor_s.fetchall():
-                
-                row_ids += [en[0]]
-                rarr = b''
+                if incrementor%8!=0:
+                    incrementor+=1
+                    continue
+                incrementor+=1
+                try:
+                    row_ids += [en[0]]
+                    rarr = b''
 
-                harr = array.array('I', en[1])
-                barr = array.array('f', en[2])
+                    harr = array.array('I', en[1])
+                    barr = array.array('f', en[2])
 
-                ### for epigenomics
-                earr = array.array('f', en[3])
+                    ### for epigenomics
+                    earr = array.array('f', en[3])
 
-                for el in harr:
-                    rarr += struct.pack('l', el)
+                    for el in harr:
+                        rarr += struct.pack('l', el)
 
-                for i in range(65):
-                    for j in range(65):
-                        # if i+1<=j and (i+j)%48==0:
-                        #     rarr += struct.pack('f',barr[i+j])
-                        if 28<i<38 and 28<j<38:
-                            rarr += struct.pack('f',barr[i*65+j])
-                ### for epigenomics
-                for el in earr:
-                    rarr += struct.pack('f', el)
-
-
-                # ### for motifs
-                # if en[4]!=":":
-                #     byteDir = bytes(en[4],'utf8')
-                #     for zbyte in byteDir:
-                #         rarr += struct.pack('I', zbyte)
+                    for i in range(65):
+                        for j in range(65):
+                            # if i+1<=j and (i+j)%48==0:
+                            #     rarr += struct.pack('f',barr[i+j])
+                            if 28<i<38 and 28<j<38:
+                                rarr += struct.pack('f',barr[i*65+j])
+                    ### for epigenomics
+                    for el in earr:
+                        rarr += struct.pack('f', el)
 
 
-                embeddings = llm.create_embedding(str(rarr))
-                _vec = np.zeros(len(embeddings['data'][0]['embedding'][0]))
-                for em in embeddings['data'][0]['embedding']:
-                    _vec[:] += np.array(em)[:]
-                _vec /= len(embeddings['data'][0]['embedding'])
-                response.embeddings +=[_vec]
+                    # ### for motifs
+                    # if en[4]!=":":
+                    #     byteDir = bytes(en[4],'utf8')
+                    #     for zbyte in byteDir:
+                    #         rarr += struct.pack('I', zbyte)
+
+
+                    embeddings = llm.create_embedding(str(rarr))
+                    _vec = np.zeros(len(embeddings['data'][0]['embedding'][0]))
+                    for em in embeddings['data'][0]['embedding']:
+                        _vec[:] += np.array(em)[:]
+                    _vec /= len(embeddings['data'][0]['embedding'])
+                    response.embeddings +=[_vec]
+                    
+                except Exception as e:
+                    print(f"{e}: exception with {en[0]}...")
+                    pass
 
             print("dataloaded@@",end="")
             # print(len(response.embeddings))
@@ -193,7 +203,7 @@ def mainProg():
     hardLimiter = 99130;
 
     insert_kwargs = {
-        "limit": 8,
+        "limit": 256,
         "offset": 0,
         "entrypoint": "llamacpp"
         }

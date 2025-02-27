@@ -8,10 +8,8 @@ import numpy as np
 import time
 
 
-# dbSQLITE3VEC = "/Users/sean/Documents/Master/2025/Feb2025/virtTables/EB_14_fts5vec.db"
-dbSQLITE3VEC = "/Users/sean/Documents/Master/2025/Feb2025/virtualTables/EB_databaseVEC_18_fts5vec.db"
-# dbSQLITE3VEC = "/Users/seanmoran/Documents/Master/2025/Feb2025/vectorPilot/SQLITE_databaseVEC.db"
-# dbVECTOR = "/Users/seanmoran/Documents/Master/2025/Feb2025/vectorPilot/EB_databaseVEC.db"
+rootpath = "/Users/sean/Documents/Master/2025/March2025/SqueakToy/"
+dbSQLITE3VEC = rootpath + "virtualTables/EB_databaseVEC_18_fts5vec.db"
 
 def call(PATH,TIMEOUT):
 
@@ -73,7 +71,7 @@ def runMain():
     index.train(xb)
     print("trained index")
     index.add(xb)
-    faiss.write_index(index, "/Users/sean/Documents/Master/2025/Feb2025/table_18_metadata/faiss.IndexIVFPQ.test.index")
+    faiss.write_index(index, rootpath+"FAISSIndex/faiss.IndexIVFPQ.test.index")
 
 
 
@@ -165,7 +163,7 @@ def runMain():
     index.add(xb)
     # index.make_direct_map()
     index.set_direct_map_type(faiss.DirectMap.Array)
-    faiss.write_index(index, "/Users/sean/Documents/Master/2025/Feb2025/table_18_metadata/faiss.IndexIVFFlat.index")
+    faiss.write_index(index, rootpath+"FAISSIndex/faiss.IndexIVFFlat.index")
 
     start = time.time()
     D, I = index.search(xq, 5)
@@ -177,7 +175,7 @@ def runMain():
 
     index2 = faiss.IndexFlatL2(d)
     index2.add(xb)
-    faiss.write_index(index, "/Users/sean/Documents/Master/2025/Feb2025/table_18_metadata/faiss.IndexFlatL2_dirMap.index")
+    faiss.write_index(index, rootpath+"FAISSIndex/faiss.IndexFlatL2_dirMap.index")
 
 
 if __name__ == "__main__":
