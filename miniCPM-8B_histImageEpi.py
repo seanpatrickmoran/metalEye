@@ -104,7 +104,7 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
                 harr = array.array('I', en[1])
                 barr = array.array('f', en[2])
                 ### for bin16
-                # earr = array.array('f', en[3])
+                earr = array.array('f', en[3])
 
                 for el in harr:
                     rarr += struct.pack('l', el)
@@ -112,20 +112,22 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
                 for i in range(0,65):
                     for j in range(0,65):
                         rarr += struct.pack('f',barr[i*65+j])
+
+                ##dead center
                 # for i in range(29,38):
                 #     for j in range(29,38):
                 #         rarr += struct.pack('f',barr[i*65+j])
 
-                ### for bin16
-                # for el in earr:
-                #     rarr += struct.pack('f', el)
+                ## for epigenomics
+                for el in earr:
+                    rarr += struct.pack('f', el)
 
 
-                ### for bin16
-                # if en[4]!=":":
-                #     byteDir = bytes(en[4],'utf8')
-                #     for zbyte in byteDir:
-                #         rarr += struct.pack('I', zbyte)
+                ## for motif direction
+                if en[4]!=":":
+                    byteDir = bytes(en[4],'utf8')
+                    for zbyte in byteDir:
+                        rarr += struct.pack('I', zbyte)
 
                 # reply += [str(rarr)]
 
@@ -185,7 +187,7 @@ def mainProg():
 
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/EB_databaseVEC_14.db"
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/testTables/metalLlamacppSPEEDTEST.db"
-    dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/debug.db"
+    dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/1_miniCPMv26_image+hist+epigenomic_bin19VEC.db"
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/llama_image+hist_only_databaseVEC_18_bin.db"
 
     try:
