@@ -9,11 +9,11 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 parent_dir_path = os.path.abspath(os.path.join(dir_path, os.pardir))
 sys.path.insert(0, parent_dir_path)
 
-dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/EB_databaseVEC_18.db"
-# dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/EB_databaseVEC_14.db"
-# dbVECTOR = "/Users/seanmoran/Documents/Master/2025/Feb2025/vectorPilot/EB_databaseVEC.db"
+# dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/EB_databaseVEC_18.db"
+# # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/EB_databaseVEC_14.db"
+# # dbVECTOR = "/Users/seanmoran/Documents/Master/2025/Feb2025/vectorPilot/EB_databaseVEC.db"
 
-dbSQLITE3VEC = "/Users/sean/Documents/Master/2025/Feb2025/virtualTables/EB_databaseVEC_18_fts5vec.db"
+# dbSQLITE3VEC = "/Users/sean/Documents/Master/2025/Feb2025/virtualTables/EB_databaseVEC_18_fts5vec.db"
 
 
 
@@ -68,7 +68,7 @@ def _writeManyToTable(dbPATH,timeout,**kwargs):
 
 
 
-def getEverything(dbPATH=dbVECTOR, timeout=10):
+def getEverything(dbPATH, timeout=10):
     try:
         db = sqlite3.connect(dbPATH)
         db.enable_load_extension(True)
@@ -86,7 +86,7 @@ def getEverything(dbPATH=dbVECTOR, timeout=10):
 
 
 
-def runMain():
+def runMain(dbVECTOR,dbSQLITE3VEC):
     rows = getEverything(dbVECTOR);
     insertion_kwargs = {
     "data":rows
@@ -104,4 +104,14 @@ def runMain():
 
 
 if __name__ == "__main__":
-    runMain()
+    dbVECTOR = sys.argv[1]
+    if not os.path.isdir('/'.join(dbVECTOR.split("/")[:-1])):
+        os.mkdir('/'.join(dbVECTOR.split("/")[:-1]))
+
+    dbSQLITE3VEC = sys.argv[2]
+    if not os.path.isdir('/'.join(dbSQLITE3VEC.split("/")[:-1])):
+        os.mkdir('/'.join(dbSQLITE3VEC.split("/")[:-1]))
+
+    # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/EB_databaseVEC_18.db"
+    # dbSQLITE3VEC = "/Users/sean/Documents/Master/2025/Feb2025/virtualTables/EB_databaseVEC_18_fts5vec.db"
+    runMain(dbVECTOR,dbSQLITE3VEC)

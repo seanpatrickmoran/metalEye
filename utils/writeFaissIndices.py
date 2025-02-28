@@ -6,10 +6,10 @@ import struct
 import numpy as np
 
 import time
+import sys, os
 
-
-rootpath = "/Users/sean/Documents/Master/2025/March2025/SqueakToy/"
-dbSQLITE3VEC = rootpath + "virtualTables/EB_databaseVEC_18_fts5vec.db"
+# rootpath = "/Users/sean/Documents/Master/2025/March2025/SqueakToy/"
+# dbSQLITE3VEC = rootpath + "virtualTables/EB_databaseVEC_18_fts5vec.db"
 
 def call(PATH,TIMEOUT):
 
@@ -41,13 +41,23 @@ def getEverything(dbPATH, timeout=10):
 
 
 
-def runMain():
+def runMain(dbSQLITE3VEC, dimensions):
+    _nameDecorator = dbSQLITE3VEC.split("/")[-1].split(".db")[0]
+    if not os.path.isdir('/'.join(dbSQLITE3VEC.split("/")[:-2])+f"/faissIndex"):
+        os.mkdir('/'.join(dbSQLITE3VEC.split("/")[:-2])+f"/faissIndex")
+
+    if not os.path.isdir('/'.join(dbSQLITE3VEC.split("/")[:-2])+f"/faissIndex"+f"/{_nameDecorator}"):
+        os.mkdir('/'.join(dbSQLITE3VEC.split("/")[:-2])+f"/faissIndex"+f"/{_nameDecorator}")
+        print('/'.join(dbSQLITE3VEC.split("/")[:-2])+f"/faissIndex"+f"/{_nameDecorator}")
+
+    rootpath = '/'.join(dbSQLITE3VEC.split("/")[:-2])+f"/faissIndex"+f"/{_nameDecorator}"
+
     rows = getEverything(dbSQLITE3VEC);
     # print([(row[0],len(row[1])) for row in rows])
     print('rad')
 
     ### faiss here.
-    d = 5120                           # dimension
+    d = dimensions                           # dimension
     nb = len(rows)                      # database size
     nq = nb//10                       # nb of queries
     xb=np.array([np.array(xi[1]) for xi in rows]).astype('float32')   #EB_14_bin has gaps in key_ids. we can just ignore these as source_17 has no gaps.
@@ -65,13 +75,13 @@ def runMain():
 
     quantizer = faiss.IndexFlatL2(d)  # this remains the same
     print("init quantizer")
-    index = faiss.IndexIVFPQ(quantizer, d, nlist, m, 8)
+    index = faiss.IndexIVFPQ(quantizer, dimensions, nlist, m, 8)
     print("init index")
                                         # 8 specifies that each sub-vector is encoded as 8 bits
     index.train(xb)
     print("trained index")
     index.add(xb)
-    faiss.write_index(index, rootpath+"FAISSIndex/faiss.IndexIVFPQ.test.index")
+    faiss.write_index(index, rootpath+"/faiss.IndexIVFPQ.test.index")
 
 
 
@@ -156,14 +166,13 @@ def runMain():
 
 
     del index
-    d = 5120                           # dimensio
-    quantizer = faiss.IndexFlatL2(d)  # the other index
-    index = faiss.IndexIVFFlat(quantizer, d, nlist)
+    quantizer = faiss.IndexFlatL2(dimensions)  # the other index
+    index = faiss.IndexIVFFlat(quantizer, dimensions, nlist)
     index.train(xb)
     index.add(xb)
     # index.make_direct_map()
     index.set_direct_map_type(faiss.DirectMap.Array)
-    faiss.write_index(index, rootpath+"FAISSIndex/faiss.IndexIVFFlat.index")
+    faiss.write_index(index, rootpath+"/faiss.IndexIVFFlat.index")
 
     start = time.time()
     D, I = index.search(xq, 5)
@@ -173,10 +182,13 @@ def runMain():
 
 
 
-    index2 = faiss.IndexFlatL2(d)
+    index2 = faiss.IndexFlatL2(dimensions)
     index2.add(xb)
-    faiss.write_index(index, rootpath+"FAISSIndex/faiss.IndexFlatL2_dirMap.index")
+    faiss.write_index(index, rootpath+"/faiss.IndexFlatL2_dirMap.index")
 
 
 if __name__ == "__main__":
-    runMain()
+    dbSQLITE3VEC = sys.argv[1]
+    # nameDecorator = sys.argv[2]
+    dimensions = int(sys.argv[2])
+    runMain(dbSQLITE3VEC, nameDecorator, dimensions)
