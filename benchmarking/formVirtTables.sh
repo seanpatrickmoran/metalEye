@@ -14,8 +14,8 @@
 # python ../utils/sqlitevec2sqlite3fts5.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/D2_llama3.2-3B-khImage+hist+epi-5bin.db /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/D2_llama3.2-3B-fts5_khImage+hist+epi-5bin.db
 # python ../utils/sqlitevec2sqlite3fts5.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/D3_llama3.2-3B-khImage+hist+epi-11bin.db /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/D3_llama3.2-3B-fts5_khImage+hist+epi-11bin.db
 # python ../utils/sqlitevec2sqlite3fts5.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/E1_llama3.2-3B-Image+hist.db /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/E1_llama3.2-3B-fts5_Image+hist.db
-python ../utils/sqlitevec2sqlite3fts5.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/E2_llama3.2-3B-Image.db /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/E2_llama3.2-3B-fts5_Image.db
-python ../utils/sqlitevec2sqlite3fts5.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/F1_llama3.2-3B-Image+epi-1bin.db /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/F1_llama3.2-3B-fts5_Image+epi-1bin.db
+# python ../utils/sqlitevec2sqlite3fts5.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/E2_llama3.2-3B-Image.db /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/E2_llama3.2-3B-fts5_Image.db
+# python ../utils/sqlitevec2sqlite3fts5.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/F1_llama3.2-3B-Image+epi-1bin.db /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/F1_llama3.2-3B-fts5_Image+epi-1bin.db
 python ../utils/sqlitevec2sqlite3fts5.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/F2_llama3.2-3B-Image+epi-5bin.db /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/F2_llama3.2-3B-fts5_Image+epi-5bin.db
 python ../utils/sqlitevec2sqlite3fts5.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/F3_llama3.2-3B-Image+epi-11bin.db /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/F3_llama3.2-3B-fts5_Image+epi-11bin.db
 
@@ -53,8 +53,8 @@ python ../utils/sqlitevec2sqlite3fts5.py /Users/sean/Documents/Master/2025/March
 # python ../utils/writeFaissIndices.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/D2_llama3.2-3B-fts5_khImage+hist+epi-5bin.db 3072
 # python ../utils/writeFaissIndices.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/D3_llama3.2-3B-fts5_khImage+hist+epi-11bin.db 3072
 # python ../utils/writeFaissIndices.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/E1_llama3.2-3B-fts5_Image+hist.db 3072
-python ../utils/writeFaissIndices.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/E2_llama3.2-3B-fts5_Image.db 3072
-python ../utils/writeFaissIndices.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/F1_llama3.2-3B-fts5_Image+epi-1bin.db 3072
+# python ../utils/writeFaissIndices.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/E2_llama3.2-3B-fts5_Image.db 3072
+# python ../utils/writeFaissIndices.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/F1_llama3.2-3B-fts5_Image+epi-1bin.db 3072
 python ../utils/writeFaissIndices.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/F2_llama3.2-3B-fts5_Image+epi-5bin.db 3072
 python ../utils/writeFaissIndices.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/F3_llama3.2-3B-fts5_Image+epi-11bin.db 3072
 

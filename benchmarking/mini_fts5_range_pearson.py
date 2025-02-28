@@ -297,7 +297,10 @@ def faissHNSW(dbSOURCE, positions, id, eValue, index, xb):
 
     # print(query.embeddings[0])
 
-    xq = np.reshape(xb[id,:], (1,-1))
+    # xq = np.reshape(xb[id,:], (1,-1))
+    #rapid work
+    xq = np.reshape(xb[id//8,:], (1,-1))
+
     k = 200 #this doesn't cost much.
     # D, I = index.search(xq, k) # search @id KNN
 

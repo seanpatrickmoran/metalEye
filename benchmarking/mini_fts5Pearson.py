@@ -205,7 +205,7 @@ def faissHNSW(dbSOURCE, id, eValue, index, xb):
     # xq = np.reshape(xb[id,:], (1,-1))
 
     #for 1:8, id is key_id*8
-    xq = np.reshape(xb[id,:], (1,-1))
+    xq = np.reshape(xb[id//8,:], (1,-1))
 
 
     # print(xq.shape)
