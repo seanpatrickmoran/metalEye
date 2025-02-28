@@ -212,7 +212,7 @@ def mainProg():
 
     insert_kwargs = {
         "limit": 256,
-        "offset": 0,
+        "offset": 15104,
         "entrypoint": "llamacpp"
         }
 
