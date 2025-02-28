@@ -191,7 +191,7 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
 
 def mainProg():
     dbSOURCE = "/Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_18_bin.db"
-    dbVECTOR = "/Users/sean/Documents/Master/2025/March2025/Tomahawk/B2_miniCPMv26_Image+epi-5bin.db"
+    dbVECTOR = "/Users/sean/Documents/Master/2025/March2025/Tomahawk/ebTable/B2_miniCPMv26_Image+epi-5bin.db"
 
     try:
         _createTable(dbVECTOR, 10)

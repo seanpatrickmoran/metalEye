@@ -43,14 +43,14 @@ def getEverything(dbPATH, timeout=10):
 
 def runMain(dbSQLITE3VEC, dimensions):
     _nameDecorator = dbSQLITE3VEC.split("/")[-1].split(".db")[0]
-    if not os.path.isdir('/'.join(dbSQLITE3VEC.split("/")[:-2])+f"/faissIndex"):
-        os.mkdir('/'.join(dbSQLITE3VEC.split("/")[:-2])+f"/faissIndex")
+    if not os.path.isdir('/'.join(dbSQLITE3VEC.split("/")[:-2])+f"/FAISSIndex"):
+        os.mkdir('/'.join(dbSQLITE3VEC.split("/")[:-2])+f"/FAISSIndex")
 
-    if not os.path.isdir('/'.join(dbSQLITE3VEC.split("/")[:-2])+f"/faissIndex"+f"/{_nameDecorator}"):
-        os.mkdir('/'.join(dbSQLITE3VEC.split("/")[:-2])+f"/faissIndex"+f"/{_nameDecorator}")
-        print('/'.join(dbSQLITE3VEC.split("/")[:-2])+f"/faissIndex"+f"/{_nameDecorator}")
+    if not os.path.isdir('/'.join(dbSQLITE3VEC.split("/")[:-2])+f"/FAISSIndex"+f"/{_nameDecorator}"):
+        os.mkdir('/'.join(dbSQLITE3VEC.split("/")[:-2])+f"/FAISSIndex"+f"/{_nameDecorator}")
+        print('/'.join(dbSQLITE3VEC.split("/")[:-2])+f"/FAISSIndex"+f"/{_nameDecorator}")
 
-    rootpath = '/'.join(dbSQLITE3VEC.split("/")[:-2])+f"/faissIndex"+f"/{_nameDecorator}"
+    rootpath = '/'.join(dbSQLITE3VEC.split("/")[:-2])+f"/FAISSIndex"+f"/{_nameDecorator}"
 
     rows = getEverything(dbSQLITE3VEC);
     # print([(row[0],len(row[1])) for row in rows])

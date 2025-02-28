@@ -197,7 +197,7 @@ def mainProg():
 
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/EB_databaseVEC_14.db"
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/testTables/metalLlamacppSPEEDTEST.db"
-    dbVECTOR = "/Users/sean/Documents/Master/2025/March2025/Tomahawk/A1_miniCPMv26_image.db"
+    dbVECTOR = "/Users/sean/Documents/Master/2025/March2025/Tomahawk/ebTable/A1_miniCPMv26_image.db"
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/llama_image+hist_only_databaseVEC_18_bin.db"
 
     try:
