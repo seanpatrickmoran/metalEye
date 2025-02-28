@@ -9,8 +9,9 @@ import sqlite3
 import json
 
 import mlx.core as mx
+from mlx.nn.losses import cosine_similarity_loss
 import numpy as np
-import sys
+import sys, os
 
 ####################################
 #
@@ -19,10 +20,10 @@ import sys
 ####################################
 
 
-dbSOURCE = "/Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_17_bin.db"
+# dbSOURCE = "/Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_17_bin.db"
 # dbSOURCE = "/Users/seanmoran/Documents/Master/2025/Feb2025/database_TEST/database_14_bin.db"
 # dbVECTOR_FTS5 = "/Users/seanmoran/Documents/Master/2025/Feb2025/EB_databaseVEC_14.db"
-dbVECTOR_FTS5 = "/Users/sean/Documents/Master/2025/Feb2025/virtualTables/EB_databaseVEC_18_fts5vec.db"
+# dbVECTOR_FTS5 = "/Users/sean/Documents/Master/2025/Feb2025/virtualTables/EB_databaseVEC_18_fts5vec.db"
 
 #99129
 
@@ -114,7 +115,7 @@ def call(PATH,TIMEOUT):
 
 
 
-def _readEmbeddingByKeyId(dbPATH, timeout, key_id=0):
+def _readEmbeddingByKeyId(dbPATH, timeout, key_id=0, dimensions=5120):
     connection,cursor=call(dbPATH,timeout)
     reply = [-1]
     try:
@@ -123,10 +124,11 @@ def _readEmbeddingByKeyId(dbPATH, timeout, key_id=0):
         print(key_id, end=": ")
         # print([b for b in cursor.fetchall()])
         # print([deserialize_f32(b, 512) for b in cursor.fetchall()])
-        reply = [deserialize_f32(b[0], 5120) for b in cursor.fetchall()]
+        reply = [deserialize_f32(b[0], dimensions) for b in cursor.fetchall()]
         if reply == []:
             return -404
     except Exception as e:
+        print(dbPATH)
         print(e, end=" ")
         print("failure")
         reply = [-1]
@@ -137,49 +139,10 @@ def _readEmbeddingByKeyId(dbPATH, timeout, key_id=0):
     return reply.pop()
 
 
-# WIP?
-# def batchedFaissHNSW(id, eValue):
-
-#     flagSourceAvail = True
-#     print("@@@", end=" ")
-#     # print("@@@", end=" ", file=sys.stderr, flush=True)
-#     #call source
-#     connection,cursor=call(dbSOURCE,10)
-
-#     try:
-#         cursor.row_factory = sqlite3.Row
-#         # cursor.execute("SELECT rowid,embedding from vector_table")
-#         query_Rows = [row for row in keyIdToRow(dbSOURCE,id, 10)]
-#         q_vmaxes  = query_Rows[6]
-#         q_images = mx.array(query_Row[5], dtype=mx.float32) / q_vmax * 255
-#         q_images = q_image.astype(dtype=mx.int8)
-#         q_epigenomics = mx.array(query_Row[17],dtype=mx.float32)
-#         #if source works, keep going else
-
-#     except Exception as e:
-#         print(e)
-#         flagSourceAvail = False
-#     finally:
-#         cursor.close()
-#         connection.close()       
-#         if flagSourceAvail==False:
-#             return 
-#     xq = np.reshape(xb[id,:], (1,-1))
-#     print(xq.shape)
-#     k = 7
-#     D, I = index.search(xq, k) # search @id KNN
-
-#     print(I)
-#     print(D)
-
-
-
-
-
 
         
 
-def faissHNSW(id, eValue):
+def faissHNSW(dbSOURCE, id, eValue, index, xb):
 
     flagSourceAvail = True
     print("@@@", end=" ")
@@ -191,7 +154,12 @@ def faissHNSW(id, eValue):
         cursor.row_factory = sqlite3.Row
         # cursor.execute("SELECT rowid,embedding from vector_table")
         # print(id)
+        # query_Row = keyIdToRow(dbSOURCE,id, 10)
+
+        #change this.
+
         query_Row = keyIdToRow(dbSOURCE,id, 10)
+
         q_vmax  = query_Row[6]
         q_image = mx.array(query_Row[5], dtype=mx.float32) / q_vmax * 255
         q_image = q_image.astype(dtype=mx.int8)
@@ -233,8 +201,13 @@ def faissHNSW(id, eValue):
     # nArr = nameToNArr(dbSOURCE, name, 10);
     # query = ollama.embed(model='llama3.2', input=str(nArr),)
 
-    # print(query.embeddings[0])
+
+    # xq = np.reshape(xb[id,:], (1,-1))
+
+    #for 1:8, id is key_id*8
     xq = np.reshape(xb[id,:], (1,-1))
+
+
     # print(xq.shape)
     k = 8 #this doesn't cost much.
     D, I = index.search(xq, k) # search @id KNN
@@ -254,18 +227,23 @@ def faissHNSW(id, eValue):
             # message["message"]+=[val]
 
 
-    store_answer["p@k"][id] = sum(1-x for x in D[0])/len(D[0])
+    # store_answer["p@k"][id] = sum(1-x for x in D[0])/len(D[0])
 
 
     store_epiP = mx.array([0]*7, dtype=mx.float32)
     store_imgP = mx.array([0]*7, dtype=mx.float32)
     store_histP = mx.array([0]*7, dtype=mx.float32)
+    store_pAtK = mx.array([0]*7, dtype=mx.float32)
 
     mxIndex = 0
     for imx in range(len(I[0])):
+        #need to map 1:8 for our sampling. FAISS doesn't track maps.
+        # print(f"mapped {int(I[0][imx])}~>{int(I[0][imx])*8}")
+        val = keyIdToRow(dbSOURCE, int(I[0][imx])*8, 10)
 
         # query_Row = keyIdToRow(dbSOURCE,id, 10)
-        val = keyIdToRow(dbSOURCE, int(I[0][imx]), 10)
+
+        # val = keyIdToRow(dbSOURCE, int(I[0][imx]), 10)
     #     node = rows.pop()
     #     val = keyIdToRow(dbSOURCE, node[0], 10)
 
@@ -292,10 +270,21 @@ def faissHNSW(id, eValue):
 
             store_epiP[mxIndex] = epiP.item()
             store_imgP[mxIndex] = imgP.item()
+            # print(id, xb[id])
+            # print(I[0][imx]*8, xb[I[0][imx]])
+            # print(xb[id].shape)
+            # xq = np.reshape(xb[id,:], (1,-1))
+            xq_choose = np.reshape(xb[int(I[0][imx]),:], (1,-1))
+            # print(cosine_similarity_loss(mx.array(xq),mx.array(xq_choose)))
+            # print((mx.array(xq).T@mx.array(xq_choose)))
+            # print((mx.linalg.norm(mx.array(xq)) * mx.linalg.norm(mx.array(xq_choose))))
+            # print( ((mx.array(xq).T@mx.array(xq_choose)) / (mx.linalg.norm(mx.array(xq)) * mx.linalg.norm(mx.array(xq_choose)))).item() )
+            store_pAtK[mxIndex] = cosine_similarity_loss(mx.array(xq),mx.array(xq_choose)).item()
             mxIndex += 1
 
     store_answer["epiScore"][id] = store_epiP.sum()/mxIndex
     store_answer["imageScore"][id] = store_imgP.sum()/mxIndex
+    store_answer["p@k"][id] = store_pAtK.sum()/mxIndex
 
     logging=""
     for pname in ["epiScore", "imageScore", "p@k"]:
@@ -311,7 +300,7 @@ def faissHNSW(id, eValue):
     print(logging)
 
 
-def keyIdToRow(dbPATH=dbSOURCE, key_id=1, timeout=10):
+def keyIdToRow(dbPATH, key_id=1, timeout=10):
     if key_id==-1:
         return
 
@@ -336,7 +325,7 @@ def keyIdToRow(dbPATH=dbSOURCE, key_id=1, timeout=10):
         return -2
 
 
-def batchedKeyIdToRow(dbPATH=dbSOURCE, key_id=1, timeout=10):
+def batchedKeyIdToRow(dbPATH, key_id=1, timeout=10):
     if key_id==-1:
         return
 
@@ -364,7 +353,7 @@ def batchedKeyIdToRow(dbPATH=dbSOURCE, key_id=1, timeout=10):
 
 
 
-def nameToKeyID(dbPATH=dbSOURCE, name="", timeout=10):
+def nameToKeyID(dbPATH, name="", timeout=10):
     print(name)
     if name=="":
         return
@@ -389,13 +378,13 @@ def nameToKeyID(dbPATH=dbSOURCE, name="", timeout=10):
 
 
 
-def getEverything(dbPATH, timeout=10):
+def getEverything(dbPATH, dimensions=5120, timeout=10):
     connection,cursor=call(dbPATH,timeout)
     try:
         cursor.row_factory = sqlite3.Row
         cursor.execute("SELECT rowid,embedding from vector_table")
         print(f"success")
-        reply = [(a,deserialize_f32(b, 5120)) for a,b in cursor.fetchall()]
+        reply = [(a,deserialize_f32(b, dimensions)) for a,b in cursor.fetchall()]
     except Exception as e:
         print(e)
         reply = []
@@ -407,53 +396,49 @@ def getEverything(dbPATH, timeout=10):
 
 
 
-############################
-#
-# INIT IN-MEM FAISS INDEX
-#
-############################
 
-index = faiss.read_index("/Users/sean/Documents/Master/2025/Feb2025/table_18_metadata/faiss.IndexIVFPQ.test.index")
-# index = faiss.read_index("/Users/seanmoran/Documents/Master/2025/Feb2025/022425_faissPrep/faiss.IndexHNSWSQ_QT8_m128eConst64.index")
-# index = faiss.read_index("/Users/seanmoran/Documents/Master/2025/Feb2025/022425_faissPrep/faiss.IndexHNSWSQ_QT8.index")
-# index = faiss.read_index("/Users/seanmoran/Documents/Master/2025/Feb2025/022425_faissPrep/faiss.IndexIVFPQ.test.index")
-assert index.is_trained
+def mainProg(dbSOURCE,dbVECTOR_FTS5,dimensions,FAISS_Index,jsonPayloadPATH):
 
-rows = getEverything(dbVECTOR_FTS5);
-k = 50
-d = 5120                           # dimension
-nb = len(rows)                      # database size
-nq = nb//10                       # nb of queries
-xb=np.array([np.array(xi[1]) for xi in rows]).astype('float32')
-############
+    index = faiss.read_index(FAISS_Index)
+    assert index.is_trained
 
-def mainProg():
+    rows = getEverything(dbVECTOR_FTS5, dimensions);
+    k = 50
+    d = dimensions                           # dimension
+    nb = len(rows)                      # database size
+    nq = nb//10                       # nb of queries
+    xb=np.array([np.array(xi[1]) for xi in rows]).astype('float32')
+
     print(xb.shape)
-    for i in range(0,99130):
+    for i in range(0,99130,8):
 
         #only for our 1/8 sampling run
         if i%8!=0:
             continue
 
-        embedded = _readEmbeddingByKeyId(dbVECTOR_FTS5, 10, i)
-
-        #batches of 200?
+        embedded = _readEmbeddingByKeyId(dbVECTOR_FTS5, 10, i, dimensions)
 
         if embedded == -404:
             pass
 
         if embedded!=-1:
-            faissHNSW(i, embedded)
+            faissHNSW(dbSOURCE, i, embedded, index, xb)
 
 
         if i%999==0:
-            with open("/Users/sean/Documents/Master/2025/Feb2025/table_18_metadata/022525_faissIVFPQ_vector_linear_pearson_analytics.json_3", "w") as zug:
+            with open(jsonPayloadPATH, "w") as zug:
                 zug.write(json.dumps(store_answer,cls=MLXEncoder))
 
-    with open("/Users/sean/Documents/Master/2025/Feb2025/table_18_metadata/022525_faissIVFPQ_vector_linear_pearson_analytics.json_3", "w") as zug:
+    with open(jsonPayloadPATH, "w") as zug:
         zug.write(json.dumps(store_answer,cls=MLXEncoder))
 
 
 if __name__ == "__main__":
-    mainProg()
+    dbSOURCE = sys.argv[1]
+    dbVECTOR_FTS5 = sys.argv[2]
+    dimensions = sys.argv[3]
+    FAISS_Index = sys.argv[4]
+    jsonPayloadPATH = sys.argv[5]
+
+    mainProg(dbSOURCE,dbVECTOR_FTS5,dimensions,FAISS_Index,jsonPayloadPATH)
 
