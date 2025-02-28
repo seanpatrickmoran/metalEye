@@ -23,13 +23,13 @@ def deserialize_f32(vector,size=512):
     return struct.unpack(f"{size}f", vector)
 
 
-def getEverything(dbPATH, timeout=10):
+def getEverything(dbPATH, dimensions, timeout=10):
     connection,cursor=call(dbPATH,timeout)
     try:
         cursor.row_factory = sqlite3.Row
         cursor.execute("SELECT rowid,embedding from vector_table")
         print(f"success")
-        reply = [(a,deserialize_f32(b, 5120)) for a,b in cursor.fetchall()]
+        reply = [(a,deserialize_f32(b, dimensions)) for a,b in cursor.fetchall()]
     except Exception as e:
         print(e)
         reply = []
@@ -52,7 +52,7 @@ def runMain(dbSQLITE3VEC, dimensions):
 
     rootpath = '/'.join(dbSQLITE3VEC.split("/")[:-2])+f"/FAISSIndex"+f"/{_nameDecorator}"
 
-    rows = getEverything(dbSQLITE3VEC);
+    rows = getEverything(dbSQLITE3VEC, dimensions);
     # print([(row[0],len(row[1])) for row in rows])
     print('rad')
 
@@ -60,11 +60,13 @@ def runMain(dbSQLITE3VEC, dimensions):
     d = dimensions                           # dimension
     nb = len(rows)                      # database size
     nq = nb//10                       # nb of queries
+
+    print(dimensions, nb)
     xb=np.array([np.array(xi[1]) for xi in rows]).astype('float32')   #EB_14_bin has gaps in key_ids. we can just ignore these as source_17 has no gaps.
     # xb = np.random.random((nb, d)).astype('float32')
     print(xb.shape)
     xb[:, 0] += np.arange(nb) / 1000.
-    xq = np.random.random((nq, d)).astype('float32')
+    xq = np.random.random((nq, dimensions)).astype('float32')
     xq[:, 0] += np.arange(nq) / 1000.
 
 
@@ -191,4 +193,4 @@ if __name__ == "__main__":
     dbSQLITE3VEC = sys.argv[1]
     # nameDecorator = sys.argv[2]
     dimensions = int(sys.argv[2])
-    runMain(dbSQLITE3VEC, nameDecorator, dimensions)
+    runMain(dbSQLITE3VEC, dimensions)
