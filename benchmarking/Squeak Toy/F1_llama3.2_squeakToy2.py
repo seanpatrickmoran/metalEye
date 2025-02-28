@@ -63,6 +63,13 @@ def _createTable(dbPATH, timeout,**kwargs):
         # cursor = connection.execute("CREATE TABLE imag(name, dataset, condition, coordinates, numpyarr, viewing_vmax, dimensions, hic_path, PUB_ID, resolution, norm, meta)")
         print("table make; success")
         # db.close()
+
+    except sqlite3.OperationalError as e:
+
+        template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+        message = template.format(type(e).__name__, e.args)
+        print(message)
+        print(e)
     finally:
         db.close()
         # cursor.close()
@@ -193,7 +200,7 @@ def mainProg():
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/EB_databaseVEC_14.db"
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/testTables/metalLlamacppSPEEDTEST.db"
     # dbVECTOR = "debug.db"
-    dbVECTOR = "/Users/sean/Documents/Master/2025/March2025/SqueakToy2/ebTable/F1_llama3.2-3B-Image+epi-1bin.db"
+    dbVECTOR = "/Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/F1_llama3.2-3B-Image+epi-1bin.db"
 
     try:
         _createTable(dbVECTOR, 10)
