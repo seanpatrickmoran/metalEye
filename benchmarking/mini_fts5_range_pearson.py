@@ -531,6 +531,11 @@ def mainProg():
 
     print(xb.shape)
     for i in range(0,99130):
+
+        #just for 1/8 split check
+        if i%8!=0:
+            continue
+
         embedded = _readEmbeddingByKeyId(dbVECTOR_FTS5, 1000, i)
 
         #batches of 200?
