@@ -177,7 +177,7 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
 
         except Exception as e:
             print(e)
-
+s
         finally:
             cursor_s.close()
             connection_s.close()
@@ -191,7 +191,7 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
 
 def mainProg():
     dbSOURCE = "/Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_19_bin.db"
-    dbVECTOR = "/Users/sean/Documents/Master/2025/March2025/Tomahawk/B3_miniCPMv26_Image+epi-11bin.db"
+    dbVECTOR = "/Users/sean/Documents/Master/2025/March2025/Tomahawk/C1_miniCPMv26_Image+epi-11+motifbin.db"
 
     try:
         _createTable(dbVECTOR, 10)
