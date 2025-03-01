@@ -81,6 +81,7 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
 
 
         try:
+            assert len(en[2])==4*65*65
             db = sqlite3.connect(dbPATH2)
             db.enable_load_extension(True)
             sqlite_vec.load(db)

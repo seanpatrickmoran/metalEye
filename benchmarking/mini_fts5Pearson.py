@@ -410,7 +410,7 @@ def mainProg(dbSOURCE,dbVECTOR_FTS5,dimensions,FAISS_Index,jsonPayloadPATH):
     xb=np.array([np.array(xi[1]) for xi in rows]).astype('float32')
 
     print(xb.shape)
-    for i in range(0,99130,8):
+    for i in range(90000,99130,8):
 
         #only for our 1/8 sampling run
         if i%8!=0:

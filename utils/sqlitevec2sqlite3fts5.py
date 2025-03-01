@@ -44,7 +44,11 @@ def _writeManyToTable(dbPATH,timeout,**kwargs):
             submission = [[x[1]] for x in data]
             cursor.executemany("INSERT INTO vector_table(embedding) VALUES(?)", submission)
             print(f"success")
+
         except Exception as e:
+            template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+            message = template.format(type(e).__name__, e.args)
+            print(message)
             print(e)
 
         finally:
@@ -80,6 +84,9 @@ def getEverything(dbPATH, timeout=10):
         return row
 
     except Exception as e:
+        template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+        message = template.format(type(e).__name__, e.args)
+        print(message)
         db.close()
         print(e)
         return [0]

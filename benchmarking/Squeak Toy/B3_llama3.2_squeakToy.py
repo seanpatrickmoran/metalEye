@@ -103,6 +103,7 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
                 incrementor+=1
                 
                 try:
+                    assert len(en[2])==4*65*65
                     row_ids += [en[0]]
                     rarr = b''
 
