@@ -140,6 +140,7 @@ def measureSqvec(PATH, timeout):
 
 
 
+
 def checkSourceImages(PATH, timeout):
     print(f"interfacing @ {PATH}")
     rowCount = 0
@@ -172,22 +173,54 @@ def checkSourceImages(PATH, timeout):
 
 
 
+def markGaps(PATH, timeout):
+    print(f"interfacing @ {PATH}")
+    rowCount = 0
+    connection_s,cursor_s=call(PATH,timeout)
+    try:
+        cursor_s.row_factory = sqlite3.Row
+        cursor_s.execute("SELECT rowid FROM vector_table")
+
+        last = -8
+        for en in cursor_s.fetchall():
+            fArr = array.array("f")
+            if en[0]-8!=last:
+                print("rowid: ", en[0],"  rowCount: ", rowCount)
+            last = en[0]
+            rowCount += 1
+
+    except sqlite3.OperationalError as e:
+        template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+        message = template.format(type(e).__name__, e.args)
+        print(message)
+        print(e)
+
+    finally:
+        cursor_s.close()
+        connection_s.close()
+        print(rowCount)
+
+
+
+
+
+
 
 
 
 def mainProg():
-    dbSOURCE = "/Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_17_bin.db"
+    # dbSOURCE = "/Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_17_bin.db"
     # /Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/A1_llama3.2-3B-khImage+hist.db 
     # /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/A1_llama3.2-3B-fts5_khImage+hist.db
-    dbVECTOR = "/Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/A1_llama3.2-3B-khImage+hist.db"
-    dbFtsVector = "/Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/A1_llama3.2-3B-fts5_khImage+hist.db"
+    # dbVECTOR = "/Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/A1_llama3.2-3B-khImage+hist.db"
+    dbFtsVector = "/Users/seanmoran/Documents/Master/2025/Mar2025/dumbo_embeddingTable/vTables/testFTS5.db"
 
-    dbs = measureSource(dbSOURCE, 10)
-    checkSourceImages(dbSOURCE,10)
-    dbv = measureSqvec(dbVECTOR, 10)
-    dbv_fts = measureFTS(dbFtsVector, 10)
+    # dbs = measureSource(dbSOURCE, 10)
+    # checkSourceImages(dbSOURCE,10)
+    # dbv = measureSqvec(dbVECTOR, 10)
+    dbv_fts = markGaps(dbFtsVector, 10)
 
-    print(dbs, dbv, dbv_fts)
+    print(dbv_fts)
     # parition_key_ids_DB(dbSOURCE,10)
 
 if __name__ == "__main__":

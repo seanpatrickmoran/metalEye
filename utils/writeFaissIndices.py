@@ -8,6 +8,8 @@ import numpy as np
 import time
 import sys, os
 
+import json
+
 # rootpath = "/Users/sean/Documents/Master/2025/March2025/SqueakToy/"
 # dbSQLITE3VEC = rootpath + "virtualTables/EB_databaseVEC_18_fts5vec.db"
 
@@ -60,6 +62,15 @@ def runMain(dbSQLITE3VEC, dimensions):
     d = dimensions                           # dimension
     nb = len(rows)                      # database size
     nq = nb//10                       # nb of queries
+
+    jsonKV_indices = {}
+    for i in range(len(rows)):
+        #use ID to get the range used in FAISS.
+        jsonKV_indices[rows[i][0]]=i
+
+
+    with open(rootpath+"/faiss.keyValue.map.json", "w") as zug:
+        zug.write(json.dumps(jsonKV_indices))
 
     print(dimensions, nb)
     xb=np.array([np.array(xi[1]) for xi in rows]).astype('float32')   #EB_14_bin has gaps in key_ids. we can just ignore these as source_17 has no gaps.

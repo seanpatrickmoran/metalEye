@@ -191,7 +191,7 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
 
 
 def mainProg():
-    dbSOURCE = "/Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_17_bin.db"
+    dbSOURCE = "/Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_24_1bin.db"
     dbVECTOR = "/Users/sean/Documents/Master/2025/March2025/Tomahawk/ebTable/B1_miniCPMv26_Image+epi-1bin.db"
 
     try:

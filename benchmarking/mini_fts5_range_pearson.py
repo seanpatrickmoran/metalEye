@@ -230,7 +230,10 @@ def _readEmbeddingByKeyId(dbPATH, timeout, key_id=0, dimensions=5120):
 ####################################
         
 
-def faissHNSW(dbSOURCE, positions, id, eValue, index, xb):
+def faissHNSW(dbSOURCE, sourceIndexKVMap, positions, id, eValue, index, xb):
+
+
+    IVsourceIndexKVMap = {v: int(k) for k, v in sourceIndexKVMap.items()}
 
     flagSourceAvail = True
     print("@@@", end=" ")
@@ -250,6 +253,9 @@ def faissHNSW(dbSOURCE, positions, id, eValue, index, xb):
         #if source works, keep going else
 
     except Exception as e:
+        template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+        message = template.format(type(e).__name__, e.args)
+        print(message)
         print(e)
         flagSourceAvail = False
     finally:
@@ -291,15 +297,17 @@ def faissHNSW(dbSOURCE, positions, id, eValue, index, xb):
     ######## ID SELECTOR RANGE##########
     start,end = positions[keyword]
     # reduced dataset
-    start//=8
-    end//=8
+
+    # right, so start is the true index, start+start%8+1 is the availible upstream index, 1-based.
+    start = sourceIndexKVMap[str(start+start%8+1)]
+    end = sourceIndexKVMap[str(end+end%8+1)]
 
 
     # print(query.embeddings[0])
 
     # xq = np.reshape(xb[id,:], (1,-1))
     #rapid work
-    xq = np.reshape(xb[id//8,:], (1,-1))
+    xq = np.reshape(xb[sourceIndexKVMap[str(id)]], (1,-1))
 
     k = 200 #this doesn't cost much.
     # D, I = index.search(xq, k) # search @id KNN
@@ -355,7 +363,7 @@ def faissHNSW(dbSOURCE, positions, id, eValue, index, xb):
         # val = keyIdToRow(dbSOURCE, int(I[imx]), 1000)
 
         #reduced dataset...
-        val = keyIdToRow(dbSOURCE, int(I[imx])*8, 10)
+        val = keyIdToRow(dbSOURCE, IVsourceIndexKVMap[I[imx]], 10)
 
 
         if val is None or val == -2:
@@ -517,6 +525,13 @@ def mainProg(dbSOURCE,positions,dbVECTOR_FTS5,dimensions,FAISS_Index,jsonPayload
     index = faiss.read_index(FAISS_Index)
     assert index.is_trained
 
+    KV_indices = "/".join(FAISS_Index.split("/")[:-1])+"/faiss.keyValue.map.json" #from write FAISS. change the sampling rate upstream to fix KV map if using more than 1:8
+
+
+    with open(KV_indices, "r") as zub:
+        sourceKeys_indexValues = json.load(zub)
+
+
     rows = getEverything(dbVECTOR_FTS5, dimensions);
     k = 50
     d = dimensions                           # dimension
@@ -530,10 +545,10 @@ def mainProg(dbSOURCE,positions,dbVECTOR_FTS5,dimensions,FAISS_Index,jsonPayload
     with open(positions, 'r') as file:
         positions = json.load(file)
 
-    for i in range(0,99130,8):
+    for i in range(1,99130,8):
 
         #only for our 1/8 sampling run
-        if i%8!=0:
+        if i%8!=1:
             continue
 
         embedded = _readEmbeddingByKeyId(dbVECTOR_FTS5, 10, i, dimensions)
@@ -542,7 +557,7 @@ def mainProg(dbSOURCE,positions,dbVECTOR_FTS5,dimensions,FAISS_Index,jsonPayload
             pass
 
         if embedded!=-1:
-            faissHNSW(dbSOURCE, positions, i, embedded, index, xb)
+            faissHNSW(dbSOURCE, sourceKeys_indexValues, positions, i, embedded, index, xb)
 
 
         if i%999==0:

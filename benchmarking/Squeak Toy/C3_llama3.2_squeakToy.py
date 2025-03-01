@@ -143,8 +143,10 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
                     response.embeddings +=[_vec]
 
                 except Exception as e:
-                    print(f"{e}: exception with {en[0]}...")
-                    pass
+                    template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+                    message = template.format(type(e).__name__, e.args)
+                    print(message)
+                    print(e)
 
             print("dataloaded@@",end="")
             # print(len(response.embeddings))
@@ -190,7 +192,7 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
 def mainProg():
     # dbSOURCE = "/Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_14_bin.db"
     # dbSOURCE = "/Users/seanmoran/Documents/Master/2025/Feb2025/database_TEST/database_14_bin.db"
-    dbSOURCE = "/Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_19_bin.db"
+    dbSOURCE = "/Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_26_11bin.db"
 
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/EB_databaseVEC_14.db"
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/testTables/metalLlamacppSPEEDTEST.db"

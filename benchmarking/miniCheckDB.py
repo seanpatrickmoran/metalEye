@@ -120,14 +120,14 @@ def measureSqvec(PATH, timeout):
 def mainProg():
     # dbSOURCE = "/Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_14_bin.db"
     # dbSOURCE = "/Users/seanmoran/Documents/Master/2025/Feb2025/database_TEST/database_14_bin.db"
-    dbSOURCE = "/Users/seanmoran/Projects/sTables/database_17_bin.db"
+    dbSOURCE = "/Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_24_1bin.db"
 
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/EB_databaseVEC_14.db"
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/testTables/metalLlamacppSPEEDTEST.db"
-    dbVECTOR = "/Users/seanmoran/Documents/Master/2025/Feb2025/EB_databaseVEC_14.db"
+    # dbVECTOR = "/Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/A1_llama3.2-3B-khImage+hist.db"
 
 
-    measureSqvec(dbVECTOR, 10)
+    # measureSqvec(dbVECTOR, 10)
     measureDB(dbSOURCE, 10)
     parition_key_ids_DB(dbSOURCE,10)
 

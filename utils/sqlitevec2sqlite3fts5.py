@@ -41,8 +41,12 @@ def _writeManyToTable(dbPATH,timeout,**kwargs):
     def _write_db(index,data):
         connection,cursor=call(dbPATH,timeout)
         try:
-            submission = [[x[1]] for x in data]
-            cursor.executemany("INSERT INTO vector_table(embedding) VALUES(?)", submission)
+            submission = []
+            for x in data:
+                submission.append((int(x[0]), x[1]))
+            query = "INSERT INTO vector_table(rowid, embedding) VALUES(?, ?)"
+            cursor.executemany(query, submission)
+            # cursor.executemany("INSERT INTO vector_table(embedding) VALUES(?)", submission)
             print(f"success")
 
         except Exception as e:
@@ -107,7 +111,8 @@ def runMain(dbVECTOR,dbSQLITE3VEC):
     _writeManyToTable(dbSQLITE3VEC,10,**insertion_kwargs)
 
 
-
+                    # #force storage to keep rowids
+                    # response.embeddings +=[struct.pack('f', 0)]
 
 
 if __name__ == "__main__":

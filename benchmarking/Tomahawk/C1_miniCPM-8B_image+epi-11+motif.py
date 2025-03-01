@@ -191,7 +191,7 @@ s
 
 
 def mainProg():
-    dbSOURCE = "/Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_19_bin.db"
+    dbSOURCE = "/Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_26_11bin.db"
     dbVECTOR = "/Users/sean/Documents/Master/2025/March2025/Tomahawk/ebTable/C1_miniCPMv26_Image+epi-11+motifbin.db"
 
     try:

@@ -193,7 +193,7 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
 def mainProg():
     # dbSOURCE = "/Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_14_bin.db"
     # dbSOURCE = "/Users/seanmoran/Documents/Master/2025/Feb2025/database_TEST/database_14_bin.db"
-    dbSOURCE = "/Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_19_bin.db"
+    dbSOURCE = "/Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_24_1bin.db"
 
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/EB_databaseVEC_14.db"
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/testTables/metalLlamacppSPEEDTEST.db"

@@ -142,7 +142,10 @@ def _readEmbeddingByKeyId(dbPATH, timeout, key_id=0, dimensions=5120):
 
         
 
-def faissHNSW(dbSOURCE, id, eValue, index, xb):
+def faissHNSW(dbSOURCE, sourceIndexKVMap, id, eValue, index, xb):
+
+
+    IVsourceIndexKVMap = {v: int(k) for k, v in sourceIndexKVMap.items()}
 
     flagSourceAvail = True
     print("@@@", end=" ")
@@ -159,7 +162,6 @@ def faissHNSW(dbSOURCE, id, eValue, index, xb):
         #change this.
 
         query_Row = keyIdToRow(dbSOURCE,id, 10)
-
         q_vmax  = query_Row[6]
         q_image = mx.array(query_Row[5], dtype=mx.float32) / q_vmax * 255
         q_image = q_image.astype(dtype=mx.int8)
@@ -167,6 +169,9 @@ def faissHNSW(dbSOURCE, id, eValue, index, xb):
         #if source works, keep going else
 
     except Exception as e:
+        template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+        message = template.format(type(e).__name__, e.args)
+        print(message)
         print(e)
         flagSourceAvail = False
     finally:
@@ -205,7 +210,9 @@ def faissHNSW(dbSOURCE, id, eValue, index, xb):
     # xq = np.reshape(xb[id,:], (1,-1))
 
     #for 1:8, id is key_id*8
-    xq = np.reshape(xb[id//8,:], (1,-1))
+
+    #k,v here.
+    xq = np.reshape(xb[sourceIndexKVMap[str(id)]], (1,-1))
 
 
     # print(xq.shape)
@@ -239,7 +246,8 @@ def faissHNSW(dbSOURCE, id, eValue, index, xb):
     for imx in range(len(I[0])):
         #need to map 1:8 for our sampling. FAISS doesn't track maps.
         # print(f"mapped {int(I[0][imx])}~>{int(I[0][imx])*8}")
-        val = keyIdToRow(dbSOURCE, int(I[0][imx])*8, 10)
+
+        val = keyIdToRow(dbSOURCE, IVsourceIndexKVMap[I[0][imx]], 10)
 
         # query_Row = keyIdToRow(dbSOURCE,id, 10)
 
@@ -402,6 +410,17 @@ def mainProg(dbSOURCE,dbVECTOR_FTS5,dimensions,FAISS_Index,jsonPayloadPATH):
     index = faiss.read_index(FAISS_Index)
     assert index.is_trained
 
+
+    KV_indices = "/".join(FAISS_Index.split("/")[:-1])+"/faiss.keyValue.map.json" #from write FAISS. change the sampling rate upstream to fix KV map if using more than 1:8
+
+
+    with open(KV_indices, "r") as zub:
+        sourceKeys_indexValues = json.load(zub)
+
+    # print(sourceKeys_indexValues)
+    # quit()
+
+
     rows = getEverything(dbVECTOR_FTS5, dimensions);
     k = 50
     d = dimensions                           # dimension
@@ -410,10 +429,10 @@ def mainProg(dbSOURCE,dbVECTOR_FTS5,dimensions,FAISS_Index,jsonPayloadPATH):
     xb=np.array([np.array(xi[1]) for xi in rows]).astype('float32')
 
     print(xb.shape)
-    for i in range(90000,99130,8):
+    for i in range(1,99130,8):
 
         #only for our 1/8 sampling run
-        if i%8!=0:
+        if i%8!=1:
             continue
 
         embedded = _readEmbeddingByKeyId(dbVECTOR_FTS5, 10, i, dimensions)
@@ -422,7 +441,7 @@ def mainProg(dbSOURCE,dbVECTOR_FTS5,dimensions,FAISS_Index,jsonPayloadPATH):
             pass
 
         if embedded!=-1:
-            faissHNSW(dbSOURCE, i, embedded, index, xb)
+            faissHNSW(dbSOURCE, sourceKeys_indexValues, i, embedded, index, xb)
 
 
         if i%999==0:
