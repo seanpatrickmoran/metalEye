@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ### tutor ### python ../utils/sqlitevec2sqlite3fts5.py /Users/seanmoran/Documents/Master/2025/Feb2025/virtualTabless/EB_databaseVEC_18.db  /Users/seanmoran/Documents/Master/2025/Feb2025/LariatTables/virtualTables/test.db
-python ../utils/sqlitevec2sqlite3fts5.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/A1_llama3.2-3B-khImage+hist.db /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/A1_llama3.2-3B-fts5_khImage+hist.db
+# python ../utils/sqlitevec2sqlite3fts5.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/A1_llama3.2-3B-khImage+hist.db /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/A1_llama3.2-3B-fts5_khImage+hist.db
 python ../utils/sqlitevec2sqlite3fts5.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/A2_llama3.2-3B-khImage.db /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/A2_llama3.2-3B-fts5_khImage.db
 python ../utils/sqlitevec2sqlite3fts5.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/A3_llama3.2-3B-hist.db /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/A3_llama3.2-3B-fts5_hist.db
 python ../utils/sqlitevec2sqlite3fts5.py /Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/B1_llama3.2-3B-khImage+epi-1bin.db /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/B1_llama3.2-3B-fts5_khImage+epi-1bin.db

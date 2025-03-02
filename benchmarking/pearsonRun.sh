@@ -9,7 +9,7 @@
 
 ### SqueakToy
 # # A
-python mini_fts5Pearson.py /Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_24_1bin.db /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/A1_llama3.2-3B-fts5_khImage+hist.db 3072 /Users/sean/Documents/Master/2025/March2025/SqueakToy/FAISSIndex/A1_llama3.2-3B-fts5_khImage+hist/faiss.IndexIVFPQ.test.index /Users/sean/Documents/Master/2025/March2025/SqueakToy/Pearson_TotalSpace/A1.json
+# python mini_fts5Pearson.py /Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_24_1bin.db /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/A1_llama3.2-3B-fts5_khImage+hist.db 3072 /Users/sean/Documents/Master/2025/March2025/SqueakToy/FAISSIndex/A1_llama3.2-3B-fts5_khImage+hist/faiss.IndexIVFPQ.test.index /Users/sean/Documents/Master/2025/March2025/SqueakToy/Pearson_TotalSpace/A1.json
 python mini_fts5Pearson.py /Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_24_1bin.db /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/A2_llama3.2-3B-fts5_khImage.db 3072 /Users/sean/Documents/Master/2025/March2025/SqueakToy/FAISSIndex/A2_llama3.2-3B-fts5_khImage/faiss.IndexIVFPQ.test.index /Users/sean/Documents/Master/2025/March2025/SqueakToy/Pearson_TotalSpace/A2.json
 python mini_fts5Pearson.py /Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_24_1bin.db /Users/sean/Documents/Master/2025/March2025/SqueakToy/virtualTables/A3_llama3.2-3B-fts5_hist.db 3072 /Users/sean/Documents/Master/2025/March2025/SqueakToy/FAISSIndex/A3_llama3.2-3B-fts5_hist/faiss.IndexIVFPQ.test.index /Users/sean/Documents/Master/2025/March2025/SqueakToy/Pearson_TotalSpace/A3.json
 
