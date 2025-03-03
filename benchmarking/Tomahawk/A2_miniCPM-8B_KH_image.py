@@ -96,6 +96,7 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
             llm = kwargs["model"]
             response = lambda: None
             response.embeddings = []
+            incrementor = 0
             for en in cursor_s.fetchall():
                 if incrementor%8!=0:
                     incrementor+=1

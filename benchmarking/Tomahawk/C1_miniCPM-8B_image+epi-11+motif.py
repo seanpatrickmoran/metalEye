@@ -178,7 +178,7 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
 
         except Exception as e:
             print(e)
-s
+
         finally:
             cursor_s.close()
             connection_s.close()

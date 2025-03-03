@@ -444,7 +444,7 @@ def mainProg(dbSOURCE,dbVECTOR_FTS5,dimensions,FAISS_Index,jsonPayloadPATH):
             faissHNSW(dbSOURCE, sourceKeys_indexValues, i, embedded, index, xb)
 
 
-        if i%999==0:
+        if (i-1)%384==0:
             with open(jsonPayloadPATH, "w") as zug:
                 zug.write(json.dumps(store_answer,cls=MLXEncoder))
 

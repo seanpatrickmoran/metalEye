@@ -77,11 +77,7 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
         # connection_t,cursor_t=call(dbPATH2,timeout)
         # dbvec = sqlite3.connect(dbPATH2)
 
-
-
-
         try:
-            assert len(en[2])==4*65*65
             db = sqlite3.connect(dbPATH2)
             db.enable_load_extension(True)
             sqlite_vec.load(db)
@@ -104,6 +100,7 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
                 incrementor+=1
 
                 try:
+                    assert len(en[2])==4*65*65
                     row_ids += [en[0]]
                     rarr = b''
 
@@ -164,7 +161,6 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
                     print(row_ids[x])
                     continue    
 
-
             template = "An exception of type {0} occurred. Arguments:\n{1!r}"
             message = template.format(type(e).__name__, e.args)
             print(message)
@@ -173,6 +169,9 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
 
 
         except Exception as e:
+            template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+            message = template.format(type(e).__name__, e.args)
+            print(message)
             print(e)
 
         finally:

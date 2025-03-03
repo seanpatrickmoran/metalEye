@@ -299,8 +299,33 @@ def faissHNSW(dbSOURCE, sourceIndexKVMap, positions, id, eValue, index, xb):
     # reduced dataset
 
     # right, so start is the true index, start+start%8+1 is the availible upstream index, 1-based.
-    start = sourceIndexKVMap[str(start+start%8+1)]
-    end = sourceIndexKVMap[str(end+end%8+1)]
+    flag = False
+    for i in range(8):
+        if flag:
+            break
+
+        for bln in [-1,1]:
+            if flag:
+                break
+            if str(start+start%8+1+i*bln) in sourceIndexKVMap.keys():
+                start =  sourceIndexKVMap[str(start+start%8+1+i*bln)]
+                flag = True
+                break
+
+    flag = False
+    for i in range(8):
+        if flag:
+            break
+
+        for bln in [-1,1]:
+            if flag:
+                break
+            if str(end+end%8+1+i*bln) in sourceIndexKVMap.keys():
+                end =  sourceIndexKVMap[str(end+end%8+1+i*bln)]
+                flag = True
+                break
+
+    print(start,end)
 
 
     # print(query.embeddings[0])
@@ -363,7 +388,10 @@ def faissHNSW(dbSOURCE, sourceIndexKVMap, positions, id, eValue, index, xb):
         # val = keyIdToRow(dbSOURCE, int(I[imx]), 1000)
 
         #reduced dataset...
-        val = keyIdToRow(dbSOURCE, IVsourceIndexKVMap[I[imx]], 10)
+        queryKey = IVsourceIndexKVMap.get(I[imx],-1)
+        if queryKey==-1:
+            print(I)
+        val = keyIdToRow(dbSOURCE, queryKey, 10)
 
 
         if val is None or val == -2:
@@ -545,6 +573,7 @@ def mainProg(dbSOURCE,positions,dbVECTOR_FTS5,dimensions,FAISS_Index,jsonPayload
     with open(positions, 'r') as file:
         positions = json.load(file)
 
+    # for i in range(1,99037,8):
     for i in range(1,99130,8):
 
         #only for our 1/8 sampling run
@@ -560,7 +589,7 @@ def mainProg(dbSOURCE,positions,dbVECTOR_FTS5,dimensions,FAISS_Index,jsonPayload
             faissHNSW(dbSOURCE, sourceKeys_indexValues, positions, i, embedded, index, xb)
 
 
-        if i%999==0:
+        if (i-1)%384==0:
             with open(jsonPayloadPATH, "w") as zug:
                 zug.write(json.dumps(store_answer,cls=MLXEncoder))
 
