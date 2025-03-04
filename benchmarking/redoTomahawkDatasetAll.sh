@@ -1,0 +1,12 @@
+#!/bin/bash
+python mini_fts5Pearson.py /Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_24_1bin.db /Users/sean/Documents/Master/2025/March2025/Tomahawk/virtualTables/A1_miniCPMv26_fts5_image.db 3584 /Users/sean/Documents/Master/2025/March2025/Tomahawk/FAISSIndex/A1_miniCPMv26_fts5_image/faiss.IndexIVFPQ.test.index /Users/sean/Documents/Master/2025/March2025/Tomahawk/Pearson_TotalSpace/A1.json
+
+python mini_fts5Pearson.py /Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_24_1bin.db /Users/sean/Documents/Master/2025/March2025/Tomahawk/virtualTables/A2_miniCPMv26_fts5KHimage.db 3584 /Users/sean/Documents/Master/2025/March2025/Tomahawk/FAISSIndex/A2_miniCPMv26_fts5KHimage/faiss.IndexIVFPQ.test.index /Users/sean/Documents/Master/2025/March2025/Tomahawk/Pearson_TotalSpace/A2.json
+
+python mini_fts5Pearson.py /Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_24_1bin.db /Users/sean/Documents/Master/2025/March2025/Tomahawk/virtualTables/B1_miniCPMv26_fts5_Image+epi-1bin.db 3584 /Users/sean/Documents/Master/2025/March2025/Tomahawk/FAISSIndex/B1_miniCPMv26_fts5_Image+epi-1bin/faiss.IndexIVFPQ.test.index /Users/sean/Documents/Master/2025/March2025/Tomahawk/Pearson_TotalSpace/B1.json
+
+python mini_fts5Pearson.py /Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_25_5bin.db /Users/sean/Documents/Master/2025/March2025/Tomahawk/virtualTables/B2_miniCPMv26_fts5_Image+epi-5bin.db 3584 /Users/sean/Documents/Master/2025/March2025/Tomahawk/FAISSIndex/B2_miniCPMv26_fts5_Image+epi-5bin/faiss.IndexIVFPQ.test.index /Users/sean/Documents/Master/2025/March2025/Tomahawk/Pearson_TotalSpace/B2.json
+
+python mini_fts5Pearson.py /Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_26_11bin.db /Users/sean/Documents/Master/2025/March2025/Tomahawk/virtualTables/B3_miniCPMv26_fts5_Image+epi-11bin.db 3584 /Users/sean/Documents/Master/2025/March2025/Tomahawk/FAISSIndex/B3_miniCPMv26_fts5_Image+epi-11bin/faiss.IndexIVFPQ.test.index /Users/sean/Documents/Master/2025/March2025/Tomahawk/Pearson_TotalSpace/B3.json
+
+python mini_fts5Pearson.py /Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_26_11bin.db /Users/sean/Documents/Master/2025/March2025/Tomahawk/virtualTables/C1_miniCPMv26_fts5_Image+epi-11bin+motif.db 3584 /Users/sean/Documents/Master/2025/March2025/Tomahawk/FAISSIndex/C1_miniCPMv26_fts5_Image+epi-11bin+motif/faiss.IndexIVFPQ.test.index /Users/sean/Documents/Master/2025/March2025/Tomahawk/Pearson_TotalSpace/C1.json

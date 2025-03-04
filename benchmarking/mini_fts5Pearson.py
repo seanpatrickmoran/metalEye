@@ -217,6 +217,7 @@ def faissHNSW(dbSOURCE, sourceIndexKVMap, id, eValue, index, xb):
 
     # print(xq.shape)
     k = 8 #this doesn't cost much.
+    # index.nprob=200
     D, I = index.search(xq, k) # search @id KNN
 
     # print(I)
@@ -247,6 +248,7 @@ def faissHNSW(dbSOURCE, sourceIndexKVMap, id, eValue, index, xb):
         #need to map 1:8 for our sampling. FAISS doesn't track maps.
         # print(f"mapped {int(I[0][imx])}~>{int(I[0][imx])*8}")
 
+        # print(I, I[0], I[0][imx])
         val = keyIdToRow(dbSOURCE, IVsourceIndexKVMap[I[0][imx]], 10)
 
         # query_Row = keyIdToRow(dbSOURCE,id, 10)
