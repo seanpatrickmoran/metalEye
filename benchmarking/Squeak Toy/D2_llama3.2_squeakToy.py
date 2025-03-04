@@ -195,7 +195,7 @@ def mainProg():
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/embeddedLoops/EB_databaseVEC_14.db"
     # dbVECTOR = "/Users/sean/Documents/Master/2025/Feb2025/testTables/metalLlamacppSPEEDTEST.db"
     # dbVECTOR = "debug.db"
-    dbVECTOR = "/Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/D1_llama3.2-3B-khImage+hist+epi-5bin.db"
+    dbVECTOR = "/Users/sean/Documents/Master/2025/March2025/SqueakToy/ebTable/D2_llama3.2-3B-khImage+hist+epi-5bin.db"
 
     try:
         _createTable(dbVECTOR, 10)

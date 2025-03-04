@@ -704,6 +704,7 @@ class TokenStopper:
         return False
 
 
+
 def _generate(model, processor, prompt, images=None, max_tokens=512, verbose=True, return_tps=False, early_stop=False, stream=True, mute=False):
     if images is not None and isinstance(prompt, list):
         raise ValueError('Images cannot be provided when prompt is a list')
@@ -740,3 +741,42 @@ def _generate(model, processor, prompt, images=None, max_tokens=512, verbose=Tru
     if return_tps:
         return prompt_tps, gen_tps
     return result, embeddings
+
+
+
+def _embedGenerate(model, processor, prompt, images=None, max_tokens=512, verbose=True, return_tps=False, early_stop=False, stream=True, mute=False):
+    if images is not None and isinstance(prompt, list):
+        raise ValueError('Images cannot be provided when prompt is a list')
+    logit_stopper = LogitStopper(max_tokens, early_stop)
+    # streamer = Streamer(processor, stream, mute)
+    dict_input = processor(prompt, images)
+    mask, pids = dict_input.get('mask', None), dict_input.get('pids', None)
+    token_stopper = TokenStopper(processor, dict_input['input_ids'].shape[0])
+    tic = Tic()
+    logits, cache, embedded = model(**dict_input, max_tokens=max_tokens)
+    token = mx.argmax(logits[:, -1, :], axis=-1)[:,None]
+    mx.eval(token, logits)
+    # streamer(token)
+    prompt_time = tic()
+    embeddings = [embedded]
+    for i in range(max_tokens-1):
+        logits, cache, embedded = model(input_ids=token, cache=cache, mask=mask, pids=pids)
+        token = mx.argmax(logits[:, -1, :], axis=-1)[:,None]
+        mx.eval(token, logits, embedded)
+        embeddings += [embedded]
+        # streamer(token)
+        if logit_stopper(logits):
+            break
+        if token_stopper(token):
+            break
+    # result, gen_len = streamer.end()
+    gen_time = tic()
+    prompt_len = dict_input['input_ids'].size
+    prompt_tps = prompt_len / prompt_time
+    # gen_tps = (gen_len - 1) / gen_time
+    # if verbose:
+        # print(f"\nPrompt: {prompt_tps:.2f} tokens-per-sec ({prompt_len} tokens / {prompt_time:.1f} sec)")
+        # print(f"Generate: {gen_tps:.2f} tokens-per-sec ({gen_len} tokens / {gen_time:.1f} sec)")
+    # if return_tps:
+    #     return prompt_tps, gen_tps
+    return embeddings
