@@ -1,0 +1,6 @@
+# python A1_Phi3Vision.py
+# python ../../utils/sqlitevec2sqlite3fts5.py /Users/sean/Documents/Master/2025/March2025/Phi3V/ebTable/A1_Phi3V.db /Users/sean/Documents/Master/2025/March2025/Phi3V/virtualTables/A1_Phi3V_fts5_image.db
+# python ../../utils/writeFaissIndices.py /Users/sean/Documents/Master/2025/March2025/Phi3V/virtualTables/A1_Phi3V_fts5_image.db 3072
+python ../mini_fts5Pearson.py /Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_24_1bin.db /Users/sean/Documents/Master/2025/March2025/Phi3V/virtualTables/A1_Phi3V_fts5_image.db 3072 /Users/sean/Documents/Master/2025/March2025/Phi3V/FAISSIndex/A1_Phi3V_fts5_image/faiss.IndexIVFPQ.test.index /Users/sean/Documents/Master/2025/March2025/Phi3V/Pearson_TotalSpace/A1.json
+python ../mini_fts5_range_pearson.py /Users/sean/Documents/Master/2025/Feb2025/sourceTables/database_24_1bin.db /Users/sean/Documents/Master/2025/March2025/IDSelectorRanges/database_24_1_2025-03-01T12.json /Users/sean/Documents/Master/2025/March2025/Phi3V/virtualTables/A1_Phi3V_fts5_image.db 3072 /Users/sean/Documents/Master/2025/March2025/Phi3V/FAISSIndex/A1_Phi3V_fts5_image/faiss.IndexIVFPQ.test.index /Users/sean/Documents/Master/2025/March2025/Phi3V/Pearson_RangeLimited/A1.json
+

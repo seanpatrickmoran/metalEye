@@ -332,6 +332,7 @@ def _readSOURCE_writeVECTOR(dbPATH1, dbPATH2,timeout,**kwargs):
                     # _ , embeddings = _generate(*kwargs["model"], *_apply_chat_template(prompt, PNG, verbose, apply_chat_template), max_tokens=max_tokens, verbose=verbose, return_tps=return_tps, early_stop=early_stop, stream=stream)
 
                     itera = 0
+                    
                     _vec = mx.zeros((embeddings[1].shape[2]),dtype=mx.bfloat16)
                     for i in range(1, len(embeddings)):
                         ilx = embeddings[i]
